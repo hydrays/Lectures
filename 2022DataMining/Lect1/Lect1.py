@@ -1,5 +1,7 @@
 from manim import *
 from manim_editor import PresentationSectionType
+import manim
+import itertools as it
 
 class TitleText(VGroup):
     def __init__(self, *text, **kwargs):
@@ -72,7 +74,7 @@ class Info(Scene):
         self.wait(1)
         self.wait(5)         
 
-class Title(Scene):
+class TitlePage(Scene):
     def construct(self):
         title = BigTitleText(
             "数据挖掘与机器学习",
@@ -428,6 +430,34 @@ class PageRank(Scene):
         self.wait(2)
         self.play(Write(caps[1]))
         self.wait(2)
+
+        self.next_section("PageRank.2", type=PresentationSectionType.NORMAL)                                        
+        image_and_caps = Group(image, caps)
+        self.play(image_and_caps.animate.shift((image.height + 0.5)*UP))
+        rect = SurroundingRectangle(caps, color = RED, stroke_width = 2, buff=0.2)        
+        self.play(Create(rect))
+        self.wait(2)
+
+        self.next_section("PageRank.3", type=PresentationSectionType.NORMAL)                                                
+        caps2_title = MarkupText(f'随机游走 (Random Walk)', font='MicroSoft YaHei', font_size = 42)
+        caps2_title.next_to(caps, DOWN, buff=1)
+        
+        caps2 = MarkupText(
+            "A walker randomly selects edges to move from one node to another.", font='MicroSoft YaHei', font_size = 36
+        )
+        caps2 = VGroup(*it.chain(*caps2))
+        caps2.set_width(12)
+        caps2.next_to(caps2_title, DOWN, buff=0.5)
+        self.play(Indicate(caps2_title))
+        self.wait(2)
+        self.play(Write(caps2))
+
+        self.next_section("PageRank.4", type=PresentationSectionType.NORMAL)                                                        
+        t = Tex(r"$w_i = $ probability the walker at node $i$")
+        t.scale(1.25).to_edge(DOWN, buff=2)
+        rect_t = SurroundingRectangle(t, color=RED, stroke_width = 2, buff=0.2)
+        self.add(t)
+        self.play(Create(rect_t))
         
 class RandomWalk(Scene):
     def construct(self):
@@ -438,5 +468,10 @@ class RandomWalk(Scene):
 
         image = ImageMobject('pagerank').set_width(10)
         self.add(image)
-        
-        
+
+class MarkovChain(Scene):
+    def construct(self):
+        title = Title(r"Markov Chain", include_underline=True)
+        self.add(title)
+
+        t = Tex(r"$X(t) \in  $ probability the walker at node $i$")
