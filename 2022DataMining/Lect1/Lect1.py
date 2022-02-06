@@ -474,4 +474,44 @@ class MarkovChain(Scene):
         title = Title(r"Markov Chain", include_underline=True)
         self.add(title)
 
-        t = Tex(r"$X(t) \in  $ probability the walker at node $i$")
+        image = ImageMobject('pagerank').set_width(10)
+        self.add(image)
+
+        self.play(Transform(image, image.set_width(5).to_corner(DL, buff=1).shift(.75*DOWN)))
+        
+        ##PP = Tex(r"$$A_{3\times 3} = \begin{bmatrix} a_{11} & a_{12} & a_{13}\\ a_{21} & a_{22} & a_{23}\\ a_{31} & a_{32} & a_{33} \end{bmatrix}$$")
+        ##self.add(PP)
+
+        ##t = Tex(r"$X(t) \in  $ probability the walker at node $i$")
+
+        self.next_section("MC.1", type=PresentationSectionType.NORMAL)
+        cap1 = Tex(r"State space: $S = \{ 1, 2, \cdots, N\}$").scale(0.75)
+        cap1.next_to(title, DOWN).to_edge(LEFT, buff=1)
+        self.add(cap1)
+
+        self.next_section("MC.2", type=PresentationSectionType.NORMAL)
+        cap2 = Tex(r"Walker: $X_n, n = 0, 1, 2, \cdots$").scale(0.75)
+        cap2.next_to(cap1, DOWN).to_edge(LEFT, buff=1)
+        self.add(cap2)
+
+        self.next_section("MC.3", type=PresentationSectionType.NORMAL)
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r"\usepackage{bm}")        
+        cap3 = Tex(r"Prob dist: $\bm{\pi}_n = (\pi^1_n, \pi^2_n, \cdots, \pi^N_n)$, $\pi^i_n = \mathbb{P}(X_n = i)$, $\sum_{i=1}^N \pi^i_n = 1$", tex_template=myTemplate).scale(0.75)
+        cap3.next_to(cap2, DOWN).to_edge(LEFT, buff=1)
+        self.add(cap3)
+
+        self.next_section("MC.4", type=PresentationSectionType.NORMAL)        
+        cap4 = Tex(r"Transite rule: $p_{ij} = \mathbb{P}(X_{n+1} = j | X_{n} = i)$").scale(0.75)
+        cap4.next_to(cap3, DOWN).to_edge(LEFT, buff=1)
+        self.add(cap4)
+
+        self.next_section("MC.5", type=PresentationSectionType.NORMAL)
+        myTemplate2 = TexTemplate()
+        myTemplate2.add_to_preamble(r"\setcounter{MaxMatrixCols}{20}")        
+        
+        tran_mat = Tex(r"$$P = \begin{bmatrix} 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1/3 & 0 & 1/3 & 0 & 1/3 & 0 & 0 & 0 & 0 & 0 \\0 & 1/2 & 0 & 0 & 1/2 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1/2 & 0 & 0 & 1/2 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1/2 & 0 & 0 & 1/2 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1/2 & 0 & 0 & 1/2 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \end{bmatrix}$$", tex_template=myTemplate2)
+        tran_mat.set_height(image.height)
+        tran_mat.to_corner(DR, buff=1).shift(.75*DOWN)
+        self.add(tran_mat)
+        
