@@ -513,7 +513,6 @@ class MarkovChain(Scene):
         self.next_section("MC.5", type=PresentationSectionType.NORMAL)
         myTemplate2 = TexTemplate()
         myTemplate2.add_to_preamble(r"\setcounter{MaxMatrixCols}{20}")        
-        myTemplate2.add_to_preamble(r"\setlength{\tabcolsep}{-10pt}")        
         
         tmat = Tex(r"P = ").scale(0.75)
         tmat.next_to(image)
@@ -537,67 +536,188 @@ class MarkovChain(Scene):
 
 class EigenVector(Scene):
     def construct(self):
-        title = Title(r"Markov Chain", include_underline=True)
+        title = Title(r"Stationary Distribution", include_underline=True)
         self.add(title)
 
-        image = ImageMobject('pagerank').set_width(10)
-        self.add(image)
+        image = ImageMobject('pagerank').set_width(5).to_edge(LEFT, buff=1)
+        #self.add(image)
 
-        self.play(Transform(image, image.set_width(5).to_corner(DL, buff=1).shift(.75*DOWN)))
-        
-        ##PP = Tex(r"$$A_{3\times 3} = \begin{bmatrix} a_{11} & a_{12} & a_{13}\\ a_{21} & a_{22} & a_{23}\\ a_{31} & a_{32} & a_{33} \end{bmatrix}$$")
-        ##self.add(PP)
-
-        ##t = Tex(r"$X(t) \in  $ probability the walker at node $i$")
-
-        self.next_section("MC.1", type=PresentationSectionType.NORMAL)
-        cap1 = Tex(r"State space: $S = \{ 1, 2, \cdots, N\}$").scale(0.75)
-        cap1.next_to(title, DOWN).to_edge(LEFT, buff=1)
-        self.add(cap1)
-        self.wait(2)
-        
-        self.next_section("MC.2", type=PresentationSectionType.NORMAL)
-        cap2 = Tex(r"Walker: $X_n, n = 0, 1, 2, \cdots$").scale(0.75)
-        cap2.next_to(cap1, DOWN).to_edge(LEFT, buff=1)
-        self.add(cap2)
-        self.wait(2)
-        
-        self.next_section("MC.3", type=PresentationSectionType.NORMAL)
         myTemplate = TexTemplate()
         myTemplate.add_to_preamble(r"\usepackage{bm}")        
-        cap3 = Tex(r"Prob dist: $\bm{\pi}_n = (\pi^1_n, \pi^2_n, \cdots, \pi^N_n)$, $\pi^i_n = \mathbb{P}(X_n = i)$, $\sum_{i=1}^N \pi^i_n = 1$", tex_template=myTemplate).scale(0.75)
-        cap3.next_to(cap2, DOWN).to_edge(LEFT, buff=1)
+        cap1 = Tex(r"Given $\bm{\pi}_{n+1}$, what is $\bm{\pi}_n$?", tex_template=myTemplate)
+        cap1.next_to(title, DOWN, buff=0.75).to_edge(LEFT, buff=1)
+        self.add(cap1)
+        
+        self.next_section("Station.1", type=PresentationSectionType.NORMAL)
+        cap2 = Tex(r"$\displaystyle \pi^i_{n+1} = \sum_{j=1}^N \pi^j_n p_{ji}$")
+        cap2.to_edge(LEFT, buff=1)
+        self.add(cap2)
+        self.wait(2)
+
+        self.next_section("Station.2", type=PresentationSectionType.NORMAL)        
+        cap3 = VGroup(*[
+            Tex(r"$= (\pi^1_n \ \pi^2_n \ \cdots \ \pi^N_n)$").scale(0.75),
+            Tex(r"$\begin{bmatrix} p_{11} & \cdots & p_{1j} & \cdots & p_{1N} \\ p_{21} & \cdots & p_{2j} & \cdots & p_{2N} \\ \vdots & \ddots &\vdots & \cdots & \vdots \\ p_{N1} & \cdots & p_{Nj} & \cdots & p_{NN}\end{bmatrix}$").scale(0.65)
+        ]).arrange(RIGHT)
+        
+        cap3.next_to(cap2, buff=0.25)
         self.add(cap3)
         self.wait(2)
         
-        self.next_section("MC.4", type=PresentationSectionType.NORMAL)        
-        cap4 = Tex(r"Transite rule: $p_{ij} = \mathbb{P}(X_{n+1} = j | X_{n} = i)$").scale(0.75)
-        cap4.next_to(cap3, DOWN).to_edge(LEFT, buff=1)
-        self.add(cap4)
+        self.next_section("Station.3", type=PresentationSectionType.NORMAL)        
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r"\usepackage{bm}")
+        cap4 = Tex(r"$\bm{\pi}_{n+1} = \bm{\pi}_n P$", tex_template=myTemplate)
+        cap4.next_to(cap1, RIGHT, buff=1)
+        rect = SurroundingRectangle(cap4)
+        self.add(cap4, rect)
         self.wait(2)
-        
-        self.next_section("MC.5", type=PresentationSectionType.NORMAL)
-        myTemplate2 = TexTemplate()
-        myTemplate2.add_to_preamble(r"\setcounter{MaxMatrixCols}{20}")        
-        myTemplate2.add_to_preamble(r"\setlength{\tabcolsep}{-10pt}")        
-        
-        tmat = Tex(r"P = ").scale(0.75)
-        tmat.next_to(image)
-        coef = Tex(r"$\lambda$").scale(0.75).next_to(tmat, buff=0.1)
-        tran_mat = Tex(r"$$\renewcommand*{\arraystretch}{1.2} \begin{bmatrix} 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1/3 & 0 & 1/3 & 0 & 1/3 & 0 & 0 & 0 & 0 & 0 \\0 & 1/2 & 0 & 0 & 1/2 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1/2 & 0 & 0 & 1/2 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1/2 & 0 & 0 & 1/2 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 1/2 & 0 & 0 & 1/2 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \end{bmatrix}$$", tex_template=myTemplate2)
-        tran_mat.set_height(image.height)
-        tran_mat.next_to(tmat)
-        self.add(tmat, tran_mat)
-        self.wait(2)
-        
-        self.next_section("MC.6", type=PresentationSectionType.NORMAL)
-        self.play(
-            Transform(tran_mat, tran_mat.next_to(coef, buff=0.1)),
-            Indicate(coef),
-        )
-        self.wait(2)        
 
-        addition = Tex(r"$\displaystyle + (1 - \lambda) \frac{\mathbb{E}} {N}$").scale(0.75).next_to(tran_mat, buff=0.1)
-        self.play(Indicate(addition))
+        self.next_section("Station.3", type=PresentationSectionType.NORMAL)        
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r"\usepackage{bm}")
+        cap5 = Tex(r"$\bm{\pi}_{0} \rightarrow \bm{\pi}_1 = \bm{\pi}_0 P \rightarrow \cdots \rightarrow \bm{\pi}_n = \bm{\pi}_0 P^n \rightarrow \bm{\pi}^*$", tex_template=myTemplate)
+        cap5.to_edge(DOWN, buff=2)
+        self.add(cap5)
+        self.wait(2)
+
+        self.next_section("Station.4", type=PresentationSectionType.NORMAL)        
+        cap6 = Tex(r"$\bm{\pi}^* = \bm{\pi}^* P$", tex_template=myTemplate)
+        cap6.next_to(cap5, DOWN, buff=0.75).scale(1.25)
+        rect6 = SurroundingRectangle(cap6)        
+        self.add(cap6, rect6)
         self.wait(2)
         
+class Summary(Scene):
+    def construct(self):
+        title = Title(r"Summary: What is Data Mining?", include_underline=True)
+        self.add(title)
+
+        image = ImageMobject('pagerank').set_width(5).to_edge(LEFT, buff=1).shift(0.5*DOWN)
+        self.add(image)
+        
+        cap1 = VGroup(*[
+            MarkupText(f'连接关系', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'随机游走', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'马氏链', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'排序', font='MicroSoft YaHei', font_size = 36),
+        ]).arrange(DOWN, buff=1).next_to(title, DOWN, buff=1).shift(RIGHT)
+        self.play(
+            FadeIn(cap1[0], scale=1.5),
+            Create(SurroundingRectangle(cap1[0])),
+            run_time = 2
+        )
+        self.play(
+            Create(Arrow(cap1[0].get_bottom(), cap1[1].get_top())),
+            run_time = 1
+        )
+        self.play(
+            FadeIn(cap1[1], scale=1.5),
+            Create(SurroundingRectangle(cap1[1])),
+            run_time = 2
+        )
+        self.play(
+            Create(Arrow(cap1[1].get_bottom(), cap1[2].get_top())),
+            run_time = 1
+        )
+        self.play(
+            FadeIn(cap1[2], scale=1.5),
+            Create(SurroundingRectangle(cap1[2])),
+            run_time = 2
+        )
+        self.play(
+            Create(Arrow(cap1[2].get_bottom(), cap1[3].get_top())),
+            run_time = 1
+        )
+        self.play(
+            FadeIn(cap1[3], scale=1.5),
+            Create(SurroundingRectangle(cap1[3])),
+            run_time = 2
+        )
+        self.wait(2)
+
+        self.next_section("Summary.1", type=PresentationSectionType.NORMAL)
+        cap1 = VGroup(*[
+            MarkupText(f'数据', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'模型', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'数学工具', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'知识', font='MicroSoft YaHei', font_size = 36),
+        ]).arrange(DOWN, buff=1).next_to(title, DOWN, buff=1).to_edge(RIGHT, buff=2)
+        self.play(
+            FadeIn(cap1[0], scale=1.5),
+            Create(SurroundingRectangle(cap1[0])),
+            run_time = 2
+        )
+        self.play(
+            Create(Arrow(cap1[0].get_bottom(), cap1[1].get_top())),
+            run_time = 1
+        )
+        self.play(
+            FadeIn(cap1[1], scale=1.5),
+            Create(SurroundingRectangle(cap1[1])),
+            run_time = 2
+        )
+        self.play(
+            Create(Arrow(cap1[1].get_bottom(), cap1[2].get_top())),
+            run_time = 1
+        )
+        self.play(
+            FadeIn(cap1[2], scale=1.5),
+            Create(SurroundingRectangle(cap1[2])),
+            run_time = 2
+        )
+        self.play(
+            Create(Arrow(cap1[2].get_bottom(), cap1[3].get_top())),
+            run_time = 1
+        )
+        self.play(
+            FadeIn(cap1[3], scale=1.5),
+            Create(SurroundingRectangle(cap1[3])),
+            run_time = 2
+        )
+        self.wait(2)
+        
+class Extension1(Scene):
+    def construct(self):
+        title = Title(r"Extension of PageRank: Citation Network", include_underline=True)
+        self.add(title)
+
+        image = ImageMobject('citation').set_height(5).move_to(ORIGIN)
+        self.add(image)
+
+        citation = MarkupText(f'Belter and Kaske, 2016').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
+        self.add(citation)
+        
+class Extension2(Scene):
+    def construct(self):
+        title = Title(r"Extension of PageRank: Social Network", include_underline=True)
+        self.add(title)
+
+        image = ImageMobject('social').set_height(5).move_to(ORIGIN)
+        self.add(image)
+        
+class Extension3(Scene):
+    def construct(self):
+        title = Title(r"Extension of PageRank: Stock Network", include_underline=True)
+        self.add(title)
+
+        image = ImageMobject('stock').set_height(5).move_to(ORIGIN)
+        self.add(image)
+        citation = MarkupText(f'Tse et. al, 2010').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
+        self.add(citation)
+
+class Homework(Scene):
+    def construct(self):
+        title = Title(r"Homework", include_underline=True)
+        self.add(title)
+
+        cap1 = VGroup(*[
+            MarkupText(f'1. 举个<span fgcolor="{YELLOW}">不是</span>数据的例子', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'2. PageRank的一个应用场景 (提想法，不需要实现)', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'3. 改进PageRank (提想法，不需要实现)', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'三选二，企业微信以信息或文档形式提交', font='MicroSoft YaHei', font_size = 36).scale(0.85)
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=1).next_to(title, DOWN, buff=1)
+
+        self.add(cap1)
+        
+
