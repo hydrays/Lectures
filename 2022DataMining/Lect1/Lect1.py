@@ -43,7 +43,7 @@ class TitleTextCenter2Corner(VGroup):
             )
         self.arrange(DOWN)
 
-class Info(Scene):
+class A01_Info(Scene):
     def construct(self):
         title = TitleText(
             "课程介绍",
@@ -74,7 +74,7 @@ class Info(Scene):
         self.wait(1)
         self.wait(5)         
 
-class TitlePage(Scene):
+class A02_TitlePage(Scene):
     def construct(self):
         title = BigTitleText(
             "数据挖掘与机器学习",
@@ -90,7 +90,7 @@ class TitlePage(Scene):
         self.add(caps)
         self.wait(5)         
 
-class Question1(Scene):
+class A03_Question1(Scene):
     def construct(self):
         cap1 = VGroup(*[
             MarkupText(f'什么是', font='MicroSoft YaHei', font_size = 100),
@@ -174,14 +174,14 @@ class Question1(Scene):
         #self.add(images_with_labels)
                 
 
-class PhoneData(Scene):
+class A04_PhoneData(Scene):
     def construct(self):
         image = ImageMobject('phone')
         image.set_height(8)
         self.add(image)
         self.wait(5)            
 
-class HomeWork(Scene):
+class A05_HomeWork(Scene):
     def construct(self):
         cap1 = MarkupText(f'什么不是数据?', font='MicroSoft YaHei', font_size = 100)
         cap2 = MarkupText(f'家庭作业: 举个<span fgcolor="{YELLOW}">不是</span>数据的例子，企业微信信息或文档提交', font='MicroSoft YaHei', font_size = 30)
@@ -191,7 +191,7 @@ class HomeWork(Scene):
         self.wait(5)
         self.play(Write(cap2))
 
-class WhatIsDataMining(Scene):
+class A06_WhatIsDataMining(Scene):
     def construct(self):
         title = MarkupText(f'什么是数据挖掘?', font='MicroSoft YaHei', font_size = 100)
         self.play(FadeIn(title))
@@ -239,13 +239,13 @@ class WhatIsDataMining(Scene):
         )
         self.wait(2)        
 
-class Search(Scene):
+class A07_Search(Scene):
     def construct(self):
         image = ImageMobject('wifi').set_height(8)        
         self.play(FadeIn(image))
         self.wait(3)
 
-class Search2(Scene):
+class A08_Search2(Scene):
     def construct(self):
         title = MarkupText(f'搜 索', font='MicroSoft YaHei', font_size = 50)
         self.play(FadeIn(title))
@@ -375,7 +375,7 @@ class Search2(Scene):
         self.play(FadeIn(rect, scale=1.5))
         self.wait(2)
 
-class Rank(Scene):
+class A09_Rank(Scene):
     def construct(self):
         title = VGroup(*[
             MarkupText(f'排 序 (Ranking)', font='MicroSoft YaHei', font_size = 50),
@@ -385,7 +385,7 @@ class Rank(Scene):
         self.play(FadeIn(title))
         self.wait(3)
 
-class Network(Scene):
+class A10_Network(Scene):
     def construct(self):
         title = MarkupText(f'网络模型', font='MicroSoft YaHei', font_size = 50)
         title.to_corner(UL)
@@ -410,7 +410,7 @@ class Network(Scene):
         )
         self.wait(2)
         
-class PageRank(Scene):
+class A11_PageRank(Scene):
     def construct(self):
         # title = MarkupText(f'PageRank', font='MicroSoft YaHei', font_size = 50)
         # title.to_edge(UP)
@@ -459,7 +459,7 @@ class PageRank(Scene):
         self.add(t)
         self.play(Create(rect_t))
         
-class RandomWalk(Scene):
+class A12_RandomWalk(Scene):
     def construct(self):
         #title = MarkupText(f'PageRank', font='MicroSoft YaHei', font_size = 50)
         #title.to_edge(UP)
@@ -467,9 +467,9 @@ class RandomWalk(Scene):
         # self.wait(2)
 
         image = ImageMobject('pagerank').set_width(10)
-        self.add(image)
+        self.play(FadeIn(image))
 
-class MarkovChain(Scene):
+class A13_MarkovChain(Scene):
     def construct(self):
         title = Title(r"Markov Chain", include_underline=True)
         self.add(title)
@@ -534,7 +534,7 @@ class MarkovChain(Scene):
         self.play(Indicate(addition))
         self.wait(2)
 
-class EigenVector(Scene):
+class A14_EigenVector(Scene):
     def construct(self):
         title = Title(r"Stationary Distribution", include_underline=True)
         self.add(title)
@@ -588,7 +588,7 @@ class EigenVector(Scene):
         self.add(cap6, rect6)
         self.wait(2)
         
-class Summary(Scene):
+class A15_Summary(Scene):
     def construct(self):
         title = Title(r"Summary: What is Data Mining?", include_underline=True)
         self.add(title)
@@ -677,7 +677,7 @@ class Summary(Scene):
         )
         self.wait(2)
         
-class Extension1(Scene):
+class A16_Extension1(Scene):
     def construct(self):
         title = Title(r"Extension of PageRank: Citation Network", include_underline=True)
         self.add(title)
@@ -687,16 +687,18 @@ class Extension1(Scene):
 
         citation = MarkupText(f'Belter and Kaske, 2016').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
         self.add(citation)
+        self.wait(2)
         
-class Extension2(Scene):
+class A17_Extension2(Scene):
     def construct(self):
         title = Title(r"Extension of PageRank: Social Network", include_underline=True)
         self.add(title)
 
         image = ImageMobject('social').set_height(5).move_to(ORIGIN)
         self.add(image)
+        self.wait(2)
         
-class Extension3(Scene):
+class A18_Extension3(Scene):
     def construct(self):
         title = Title(r"Extension of PageRank: Stock Network", include_underline=True)
         self.add(title)
@@ -705,8 +707,9 @@ class Extension3(Scene):
         self.add(image)
         citation = MarkupText(f'Tse et. al, 2010').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
         self.add(citation)
-
-class Homework(Scene):
+        self.wait(2)
+        
+class A19_HomeworkFinal(Scene):
     def construct(self):
         title = Title(r"Homework", include_underline=True)
         self.add(title)
@@ -719,5 +722,10 @@ class Homework(Scene):
         ]).arrange(DOWN, aligned_edge=LEFT, buff=1).next_to(title, DOWN, buff=1)
 
         self.add(cap1)
-        
+        self.wait(2)        
 
+class A20_Google(Scene):
+    def construct(self):
+        image = ImageMobject('google').set_height(5)#.to_edge(LEFT)
+        self.add(image)        
+        self.wait(2)
