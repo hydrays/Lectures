@@ -44,6 +44,7 @@ class A02_Quote(Scene):
 
 class A03_Stars(Scene):
     def construct(self):
+        self.add_sound("start")
         stars = ImageMobject("stars").set_opacity(0.75)
         stars.set_height(10).shift(0.5*DOWN)
         self.play(GrowFromEdge(stars, DOWN), run_time=5)
@@ -61,7 +62,9 @@ class A03_Stars(Scene):
             #AddTextLetterByLetter(caps, time_per_char=0.2),
             run_time = 35
         )
-
+        #self.includes_sound = True
+        
+        
 class A04_Bode(Scene):
     def construct(self):
         title = Title(r"Titius-Bode law", include_underline=True)
@@ -110,11 +113,49 @@ class A05_Miss(Scene):
     def construct(self):
         title = Title(r"The Missing Planet", include_underline=True)
         self.add(title)
+        
+        orbits = ImageMobject("orbits_edit").set_width(6).next_to(title, DOWN, buff=0.5).to_edge(LEFT, buff=0)
+        citation = MarkupText(f'Copyright: ESA 2000. Illustration by Medialab').scale(0.35).next_to(orbits, DOWN, buff=0, aligned_edge=LEFT)
+        self.play(
+            FadeIn(orbits),
+            FadeIn(citation)
+        )        
 
+        self.next_section("Miss.1", type=PresentationSectionType.NORMAL)        
+        caps = VGroup(*[
+            #MarkupText(f'曾经在这个星球上滋生了邪恶, 上帝把这个星球毁灭了', font='MicroSoft YaHei', font_size = 42, weight=BOLD),
+            MarkupText(f'曾经在这个星球上滋生了邪恶, 上帝把这个星球毁灭了', font='MicroSoft YaHei', font_size = 42, weight=BOLD),
+            MarkupText(f'1785年，瓦特改良了蒸汽机, 第一次工业革命拉开序幕', font='MicroSoft YaHei', font_size = 42, weight=BOLD),            
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.75).scale(0.6).to_edge(RIGHT, buff=1)
+        self.play(FadeIn(caps))
+
+class A06_Found(Scene):
+    def construct(self):
+        title = Text("惊鸿一瞥", font='MicroSoft YaHei', font_size = 42).to_edge(UP, buff=1)
+        self.add(title)
+        
+        caps = VGroup(*[
+            MarkupText(f'1801年1月1日', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'在2.8au附近发现了一颗星!', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'然而, 只过了40多天,', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'这颗星再次消失在太阳身后,', font='MicroSoft YaHei', font_size = 42),            
+            MarkupText(f'找不着了...', font='MicroSoft YaHei', font_size = 42),            
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.75).scale(0.6).to_edge(LEFT, buff=1)
+        self.play(FadeIn(caps))
+        
+        self.next_section("Found.1", type=PresentationSectionType.NORMAL)        
+        caps2 = VGroup(*[
+            MarkupText(f'只是因为在人群中多看了你一眼', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'再也没能忘掉你容颜', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'梦想着偶然能有一天再相见', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'从此我开始孤单思念', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f' --- 传奇 (词: 刘兵, 曲: 李健)', font='MicroSoft YaHei', font_size = 42),                                    
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.75).scale(0.6).to_edge(RIGHT, buff=1)
+        self.play(FadeIn(caps2))
         
 class A20_HomeworkFinal(Scene):
     def construct(self):
-        title = Title(r"Homework", include_underline=True)
+        title = Title(f"Homework", include_underline=True)
         self.add(title)
 
         cap1 = VGroup(*[
