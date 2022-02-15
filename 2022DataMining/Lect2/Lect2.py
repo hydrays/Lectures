@@ -77,7 +77,7 @@ class A04_Bode(Scene):
 
         self.next_section("Bode.1", type=PresentationSectionType.NORMAL)
         caps2 = VGroup(*[
-            MarkupText(f'"The missing star"', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'"The missing planet"', font='MicroSoft YaHei', font_size = 42),
         ]).scale(0.75).next_to(bode_eq, DOWN, buff=0.5)
         
         dist = ImageMobject("planet_dist_edit").set_width(5).to_edge(RIGHT, buff=1)
@@ -86,23 +86,31 @@ class A04_Bode(Scene):
         self.next_section("Bode.2", type=PresentationSectionType.NORMAL)        
         caps2_arrow = Arrow(caps2.get_right(), dist.get_left() + .85*DOWN, color="RED")
         self.play(
-            write(caps2, caps2_arrow)
+            Write(caps2),
+            Create(caps2_arrow),
         )
 
+        self.next_section("Bode.3", type=PresentationSectionType.NORMAL)                
         caps3 = VGroup(*[
             MarkupText(f'Many years past ... nothing!', font='MicroSoft YaHei', font_size = 42),
         ]).scale(0.75).next_to(caps2, DOWN, buff=0.5).to_edge(LEFT, buff=1)
-        self.add(caps3)
+        self.play(ApplyWave(caps3, run_time=3))
 
+        self.next_section("Bode.4", type=PresentationSectionType.NORMAL)                        
         caps4 = VGroup(*[
             MarkupText(f'十多年后 (1781年), 有人发现了天王星 ...', font='MicroSoft YaHei', font_size = 42),
             MarkupText(f'OMG!', font='MicroSoft YaHei', font_size = 42),            
         ]).arrange(RIGHT).scale(0.75).next_to(caps3, DOWN, buff=.75).to_edge(LEFT, buff=1)
-        self.add(caps4)
-        
         uranus = ImageMobject("uranus").set_width(5).next_to(dist, DOWN, buff=0)
-        self.add(uranus)
+        self.play(Write(caps4[0], run_time=3))
+        self.play(FadeIn(uranus, target_position=caps4[0], run_time=3))
+        self.play(FadeIn(caps4[-1], scale=2, run_time=3))
         
+class A05_Miss(Scene):
+    def construct(self):
+        title = Title(r"The Missing Planet", include_underline=True)
+        self.add(title)
+
         
 class A20_HomeworkFinal(Scene):
     def construct(self):
