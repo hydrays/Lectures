@@ -58,10 +58,11 @@ class A03_Stars(Scene):
         ]).arrange(DOWN, aligned_edge=LEFT, buff=0.75).scale(0.6).to_edge(UP, buff=2).to_edge(RIGHT, buff=1)
         self.play(
             #Write(caps),
-            AddTextWordByWord(caps, time_per_char=0.15),
+            AddTextWordByWord(caps, time_per_char=0.2),
             #AddTextLetterByLetter(caps, time_per_char=0.2),
-            run_time = 35
+            run_time = 45
         )
+        self.play(FadeOut(caps, run_time=6))
         #self.includes_sound = True
         
         
@@ -125,7 +126,7 @@ class A05_Miss(Scene):
         caps = VGroup(*[
             #MarkupText(f'曾经在这个星球上滋生了邪恶, 上帝把这个星球毁灭了', font='MicroSoft YaHei', font_size = 42, weight=BOLD),
             MarkupText(f'曾经在这个星球上滋生了邪恶, 上帝把这个星球毁灭了', font='MicroSoft YaHei', font_size = 42, weight=BOLD),
-            MarkupText(f'1785年，瓦特改良了蒸汽机, 第一次工业革命拉开序幕', font='MicroSoft YaHei', font_size = 42, weight=BOLD),            
+            MarkupText(f'24人组成The Society for the Detection of a Missing World', font='MicroSoft YaHei', font_size = 42, weight=BOLD),
         ]).arrange(DOWN, aligned_edge=LEFT, buff=0.75).scale(0.6).to_edge(RIGHT, buff=1)
         self.play(FadeIn(caps))
 
@@ -139,20 +140,127 @@ class A06_Found(Scene):
             MarkupText(f'在2.8au附近发现了一颗星!', font='MicroSoft YaHei', font_size = 42),
             MarkupText(f'然而, 只过了40多天,', font='MicroSoft YaHei', font_size = 42),
             MarkupText(f'这颗星再次消失在太阳身后,', font='MicroSoft YaHei', font_size = 42),            
-            MarkupText(f'找不着了...', font='MicroSoft YaHei', font_size = 42),            
-        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.75).scale(0.6).to_edge(LEFT, buff=1)
-        self.play(FadeIn(caps))
+            MarkupText(f'等到她从太阳身后出来时,', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'找不着了...', font='MicroSoft YaHei', font_size = 42),                        
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.75).scale(0.6).next_to(title, DOWN, buff=1).to_edge(LEFT, buff=1.5)
+        self.wait(3)
+        self.play(
+            AddTextLetterByLetter(caps, time_per_char=3)
+        )
         
         self.next_section("Found.1", type=PresentationSectionType.NORMAL)        
         caps2 = VGroup(*[
-            MarkupText(f'只是因为在人群中多看了你一眼', font='MicroSoft YaHei', font_size = 42),
-            MarkupText(f'再也没能忘掉你容颜', font='MicroSoft YaHei', font_size = 42),
-            MarkupText(f'梦想着偶然能有一天再相见', font='MicroSoft YaHei', font_size = 42),
-            MarkupText(f'从此我开始孤单思念', font='MicroSoft YaHei', font_size = 42),
-            MarkupText(f' --- 传奇 (词: 刘兵, 曲: 李健)', font='MicroSoft YaHei', font_size = 42),                                    
-        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.75).scale(0.6).to_edge(RIGHT, buff=1)
-        self.play(FadeIn(caps2))
+            MarkupText(f'传奇', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'词: 刘兵, 曲: 李健', font='MicroSoft YaHei', font_size = 36),                                                
+            MarkupText(f'只是因为在人群中多看了你一眼, ', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'再也没能忘掉你容颜, ', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'梦想着偶然能有一天再相见, ', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'从此我开始孤单思念, ', font='MicroSoft YaHei', font_size = 42),
+        ]).arrange(DOWN, buff=0.75).scale(0.6).next_to(title, DOWN, buff=1).to_edge(RIGHT, buff=1)
+        self.play(
+            AddTextWordByWord(caps2, time_per_char=0.5)
+        )
         
+class A07_MI(Scene):
+    def construct(self):
+        #title = Title(f"Mission Impossible", include_underline=True)
+        #self.add(title)
+
+        image = ImageMobject("sketch").set_height(8.5).to_edge(LEFT, buff=0)
+        #citation = MarkupText(f'Gauss (1809)').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
+        self.play(
+            FadeIn(image),
+            #FadeIn(citation)
+        )
+
+        self.next_section("MI.1", type=PresentationSectionType.NORMAL)
+        laplace = ImageMobject("laplace").set_height(3).next_to(image, buff=2.5)#.shift(1*UP)
+        citation = MarkupText(f'Pierre-Simon Laplace').scale(0.35).next_to(laplace, UP, buff=0.1)#.shift(1.5*UP)
+        caps2 = VGroup(*[
+            MarkupText(f'Impossible to solve with such little data', font='MicroSoft YaHei', font_size = 36),
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.25).scale(0.6).next_to(laplace, DOWN, buff=0.5)
+        self.play(
+            FadeIn(laplace, citation),
+            Write(caps2)
+        )
+
+class A08_Gauss(Scene):
+    def construct(self):
+        #title = Title(f"Mission Impossible", include_underline=True)
+        #self.add(title)
+
+        image = ImageMobject("gauss").set_height(6).to_edge(LEFT, buff=1)
+        #citation = MarkupText(f'Gauss (1809)').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
+        self.play(
+            FadeIn(image),
+            #FadeIn(citation)
+        )
+
+        self.next_section("Gauss.1", type=PresentationSectionType.NORMAL)
+        cap = MarkupText(f'The Prince of Mathematics').scale(0.75).next_to(image, buff=1).shift(UP)
+        caps2 = VGroup(*[
+            MarkupText(f'一战封神，年仅24岁, 起飞!', font='MicroSoft YaHei', font_size = 36),
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.25).next_to(cap, DOWN, buff=0.5)
+        self.play(
+            FadeIn(cap, caps2)
+        )
+
+        self.next_section("Gauss.2", type=PresentationSectionType.NORMAL)
+        caps3 = VGroup(*[
+            MarkupText(f'The Duke of Brunswick has discovered more in', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'his country than a planet: a super-terrestrial', font='MicroSoft YaHei', font_size = 36),            
+            MarkupText(f'spirit in a human body. --- Laplace', font='MicroSoft YaHei', font_size = 36),
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.25).scale(0.5).next_to(caps2, DOWN, buff=1)
+        self.play(
+            FadeIn(caps3)
+        )
+
+class A09a_Planets(Scene):
+    def construct(self):
+        image = ImageMobject("planets").set_height(8.5)
+        image2 = ImageMobject("planet_dist_full").set_height(6).to_edge(RIGHT, buff=0)
+        self.play(
+            FadeIn(image),
+        )
+        self.next_section("Planets.1", type=PresentationSectionType.NORMAL)        
+        self.play(
+            FadeIn(image2, direction=DOWN),
+        )
+        
+class A09b_Problem(Scene):
+    def construct(self):
+        title = Title(f"Problem", include_underline=True)
+        self.add(title)
+
+        image = ImageMobject("problem").set_height(6).next_to(title, DOWN)
+        citation = MarkupText(f'Teets and Whitehead (1999)').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
+        self.play(
+            FadeIn(image),
+            FadeIn(citation)
+        )
+
+class A11_Contrib(Scene):
+    def construct(self):
+        caps = VGroup(*[
+            MarkupText(f'1: 误差的模型 --- 高斯分布(正态分布)', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'2: 最小二乘法', font='MicroSoft YaHei', font_size = 42),
+        ]).arrange(DOWN, aligned_edge = LEFT, buff=1)
+        self.play(FadeIn(caps))
+        
+class A12_Error(Scene):
+    def construct(self):
+        title = Title(f"The Model of Error", include_underline=True)
+        self.add(title)
+
+        self.next_section("Error.1", type=PresentationSectionType.NORMAL)
+        image = ImageMobject("data").set_height(6).next_to(title, DOWN)
+        citation = MarkupText(f'Stahl (2006)').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
+        self.play(
+            FadeIn(image),
+            FadeIn(citation)
+        )
+        
+
 class A20_HomeworkFinal(Scene):
     def construct(self):
         title = Title(f"Homework", include_underline=True)
