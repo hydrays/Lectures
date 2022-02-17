@@ -155,10 +155,14 @@ class A06_Found(Scene):
             MarkupText(f'只是因为在人群中多看了你一眼, ', font='MicroSoft YaHei', font_size = 42),
             MarkupText(f'再也没能忘掉你容颜, ', font='MicroSoft YaHei', font_size = 42),
             MarkupText(f'梦想着偶然能有一天再相见, ', font='MicroSoft YaHei', font_size = 42),
-            MarkupText(f'从此我开始孤单思念, ', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f'从此我开始孤单思念. ', font='MicroSoft YaHei', font_size = 42),
         ]).arrange(DOWN, buff=0.75).scale(0.6).next_to(title, DOWN, buff=1).to_edge(RIGHT, buff=1)
-        self.play(
-            AddTextWordByWord(caps2, time_per_char=0.5)
+        self.play(            
+            AddTextLetterByLetter(caps2[0:2], time_per_char=3)
+        )
+        self.add_sound("legend_cut")
+        self.play(            
+            AddTextLetterByLetter(caps2[2:6], time_per_char=6)
         )
         
 class A07_MI(Scene):
