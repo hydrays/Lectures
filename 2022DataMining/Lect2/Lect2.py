@@ -219,7 +219,7 @@ class A08_Gauss(Scene):
             FadeIn(caps3)
         )
 
-class A09a_Planets(Scene):
+class A09_Planets(Scene):
     def construct(self):
         image = ImageMobject("planets").set_height(8.5)
         image2 = ImageMobject("planet_dist_full").set_height(6).to_edge(RIGHT, buff=0)
@@ -231,7 +231,7 @@ class A09a_Planets(Scene):
             FadeIn(image2, direction=DOWN),
         )
         
-class A09b_Problem(Scene):
+class A10_Problem(Scene):
     def construct(self):
         title = Title(f"Problem", include_underline=True)
         self.add(title)
@@ -253,7 +253,7 @@ class A11_Contrib(Scene):
         
 class A12_Error(Scene):
     def construct(self):
-        title = Title(f"The Model of Error", include_underline=True)
+        title = Title(f"A Model of Error", include_underline=True)
         self.add(title)
 
         self.next_section("Error.1", type=PresentationSectionType.NORMAL)
@@ -264,7 +264,81 @@ class A12_Error(Scene):
             FadeIn(citation)
         )
         
+        self.next_section("Error.2", type=PresentationSectionType.NORMAL)
+        self.play(
+            FadeOut(image),
+            FadeOut(citation),            
+        )
+        image = ImageMobject("laplace_dist").set_width(6).to_edge(LEFT, buff=1)
+        citation = MarkupText(f'Stahl (2006)').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
+        self.play(
+            FadeIn(image),
+            FadeIn(citation)
+        )
 
+        self.next_section("Error.3", type=PresentationSectionType.NORMAL)
+        caps = VGroup(*[
+            Tex(r'$$ \frac{d\phi(x+dx)}{d\phi(x)} = \frac{\phi(x+dx)}{\phi(x)} $$'),
+            Tex(r'$$ \frac{d\phi(x+dx)/dx}{d\phi(x)/dx} = \frac{\phi(x+dx)}{\phi(x)} $$'),
+            Tex(r'$$ \frac{d\phi(x)/dx}{\phi(x)} = \mathrm{Const}$$'),
+            Tex(r'$$ \frac{d\phi(x)}{dx} = -m \phi(x)$$'),
+            Tex(r'$$ \phi(x) = \frac{m}{2}\mathrm{exp}(-m|x|).$$'),                                    
+        ]).arrange(DOWN, aligned_edge = LEFT, buff=0.35).scale(0.75).next_to(image, RIGHT, buff=1).shift(.5*DOWN)
+        caps[4].shift(0.25*DOWN)
+        self.play(
+            FadeIn(caps[0:4]),
+        )
+
+        self.next_section("Error.4", type=PresentationSectionType.NORMAL)        
+        rect = SurroundingRectangle(caps[4])
+        arrow2 = Arrow(caps[4].get_left(), image.get_center() + .5*RIGHT, color="RED")        
+        self.play(
+            FadeIn(caps[4]),
+            Create(rect, run_time = 3)
+        )
+        self.wait(3)
+        self.play(
+            FadeIn(arrow2)
+        )
+        
+        self.next_section("Error.5", type=PresentationSectionType.NORMAL)
+        self.play(
+            FadeOut(image, citation),
+            FadeOut(caps, rect, arrow2),            
+        )
+
+class A13_ErrorModel(Scene):
+    def construct(self):
+        title = Title(f"The Model of Error", include_underline=True)
+        title2 = Title(f"The Model of Error", include_underline=False).move_to(ORIGIN)
+        self.add(title2)
+
+        self.next_section("ErrorModel.1", type=PresentationSectionType.NORMAL)        
+        self.play(Transform(title2, title), run_time = 3)
+
+        cap = VGroup(*[
+            MarkupText(f'1. Small errors are more likely than large errors.', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'2. The distribution is symmetrical.', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'3. The average (arithmetic mean) is the most likely value.', font='MicroSoft YaHei', font_size = 36),
+        ]).scale(0.75).arrange(DOWN, aligned_edge=LEFT, buff=0.5).next_to(title, DOWN, buff=1)
+        self.play(Write(cap[0]))
+
+        self.next_section("ErrorModel.2", type=PresentationSectionType.NORMAL)
+        self.play(Write(cap[1]))
+        
+        self.next_section("ErrorModel.3", type=PresentationSectionType.NORMAL)
+        self.play(Write(cap[2]))
+
+        self.next_section("ErrorModel.4", type=PresentationSectionType.NORMAL)        
+        eq = VGroup(*[
+            Tex(r'$$ \phi(x) = \frac{h}{\sqrt{\pi}} \mathrm{exp} (-h^2 x^2).$$'),
+        ]).next_to(cap, DOWN, buff=1)
+        rect = SurroundingRectangle(eq)
+        self.play(
+            FadeIn(eq),
+            Create(rect, run_time = 3)
+        )
+        
 class A20_HomeworkFinal(Scene):
     def construct(self):
         title = Title(f"Homework", include_underline=True)
