@@ -338,6 +338,37 @@ class A13_ErrorModel(Scene):
             FadeIn(eq),
             Create(rect, run_time = 3)
         )
+
+class A14_NormalProof(Scene):
+    def construct(self):
+        cap = VGroup(*[
+            MarkupText(f'1. Small errors are more likely than large errors.', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'2. The distribution is symmetrical.', font='MicroSoft YaHei', font_size = 36),
+            MarkupText(f'3. The average (arithmetic mean) is the most likely value.', font='MicroSoft YaHei', font_size = 36),
+        ]).scale(0.65).arrange(DOWN, aligned_edge=LEFT, buff=0.2).to_edge(UP, buff=0.5)
+        self.play(Write(cap[0:2]))
+
+        self.next_section("NormalProof.1", type=PresentationSectionType.NORMAL)
+        image1 = ImageMobject("p1").set_height(6).to_edge(DOWN, buff=0.2)
+        self.play(FadeIn(image1))
+
+        self.next_section("NormalProof.2", type=PresentationSectionType.NORMAL)
+        image2 = ImageMobject("p2").set_height(6).to_edge(DOWN, buff=0.5)
+        self.play(FadeOut(cap[0:2]))
+        self.play(FadeOut(image1))        
+        self.play(Write(cap[2].shift(UP)))
+        self.play(FadeIn(image2))
+        
+        self.next_section("NormalProof.3", type=PresentationSectionType.NORMAL)
+        image3 = ImageMobject("p3").set_height(6).to_edge(DOWN, buff=0.5)
+        self.play(FadeOut(cap[2]))
+        self.play(FadeOut(image2))        
+        self.play(FadeIn(image3))
+        
+        self.next_section("NormalProof.4", type=PresentationSectionType.NORMAL)
+        image4 = ImageMobject("p4").set_height(6).to_edge(DOWN, buff=0.5)
+        self.play(FadeOut(image3))        
+        self.play(FadeIn(image4))
         
 class A20_HomeworkFinal(Scene):
     def construct(self):
