@@ -74,6 +74,26 @@ class A01_Info(Scene):
         self.play(Write(caps[6]))
         self.play(Write(caps[7]))
 
+class A01a_BigPicture(Scene):
+    def construct(self):
+        title = Title("Overview", include_underline=True)
+        caps1 = VGroup(*[
+            MarkupText(f'1. Introduction'),
+            MarkupText(f'2. Linear Regression'),
+            MarkupText(f'3. Automatic Differentiation'),
+            MarkupText(f'4. Bayesian Estimation')
+        ]).scale(0.5).arrange(DOWN, buff=0.75, aligned_edge=LEFT).to_edge(LEFT, buff=1)
+        self.add(title)
+        self.play(FadeIn(caps1))
+
+        caps2 = VGroup(*[
+            MarkupText(f'5. Clustering'),
+            MarkupText(f'6. Natural Language Processing'),
+            MarkupText(f'7. Bioinformatics'),
+            MarkupText(f'8. Computer Vision')
+        ]).scale(0.5).arrange(DOWN, buff=0.75, aligned_edge=LEFT).to_edge(RIGHT, buff=1)
+        self.play(FadeIn(caps2))
+        
 class A02_TitlePage(Scene):
     def construct(self):
         title = BigTitleText(
@@ -697,6 +717,11 @@ class A15a_Question(Scene):
         self.next_section("Question.1", type=PresentationSectionType.NORMAL)                
         self.play(FadeOut(Q1))
         self.play(FadeIn(Q2))
+        
+        self.next_section("Question.1a", type=PresentationSectionType.NORMAL)                        
+        caps = VGroup(*[MarkupText(f'Larry Page and Sergey Brin', font='MicroSoft YaHei', font_size = 50)])
+        caps.scale(0.6).next_to(Q2, DOWN, buff=1)
+        self.play(FadeIn(caps))
         
         self.next_section("Question.2", type=PresentationSectionType.NORMAL)
         self.play(FadeOut(Q2))
