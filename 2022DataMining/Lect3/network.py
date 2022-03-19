@@ -545,11 +545,11 @@ class NetworkMobject(VGroup):
             self.edge_groups.add(edge_group)
         self.add_to_back(self.edge_groups)
 
-    def get_edge(self, neuron1, neuron2):
+    def get_edge(self, neuron1, neuron2, buff=1.0):
         return Line(
             neuron1.get_center(),
             neuron2.get_center(),
-            buff = 1.0*self.neuron_radius,
+            buff = buff*self.neuron_radius,
             #buff = 0,
             stroke_color = self.edge_color,
             stroke_width = self.edge_stroke_width,
@@ -601,15 +601,16 @@ class NetworkMobject(VGroup):
         all_neurons.set_fill(opacity = 0)
         return self
 
-    def get_edge_propogation_animations(self, index):
+    def get_edge_propogation_animations(self, index, run_time=1):
         edge_group_copy = self.edge_groups[index].copy()
         edge_group_copy.set_stroke(
-            self.edge_propogation_color,
-            width = 1.5*self.edge_stroke_width
+            #self.edge_propogation_color,
+            color=RED,
+            width = 3*self.edge_stroke_width
         )
         return [ShowPassingFlash(
             edge_group_copy, 
-            run_time = self.edge_propogation_time,
+            run_time = run_time*self.edge_propogation_time,
             lag_ratio = 0.1
         )]
 

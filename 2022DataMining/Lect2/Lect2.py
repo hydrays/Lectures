@@ -156,12 +156,11 @@ class A06_Found(Scene):
         
         self.next_section("Found.1", type=PresentationSectionType.NORMAL)        
         caps2 = VGroup(*[
-            MarkupText(f'传奇', font='MicroSoft YaHei', font_size = 42),
-            MarkupText(f'词: 刘兵, 曲: 李健', font='MicroSoft YaHei', font_size = 36),                                                
             MarkupText(f'只是因为在人群中多看了你一眼, ', font='MicroSoft YaHei', font_size = 42),
             MarkupText(f'再也没能忘掉你容颜, ', font='MicroSoft YaHei', font_size = 42),
             MarkupText(f'梦想着偶然能有一天再相见, ', font='MicroSoft YaHei', font_size = 42),
             MarkupText(f'从此我开始孤单思念. ', font='MicroSoft YaHei', font_size = 42),
+            MarkupText(f' --- 《传奇》', font='MicroSoft YaHei', font_size = 36),
         ]).arrange(DOWN, buff=0.75).scale(0.6).next_to(title, DOWN, buff=1).to_edge(RIGHT, buff=1)
         self.play(            
             AddTextLetterByLetter(caps2, time_per_char=2)
@@ -269,7 +268,7 @@ class A12_Error(Scene):
         self.add(title)
 
         self.next_section("Error.1", type=PresentationSectionType.NORMAL)
-        image = ImageMobject("data").set_height(6).next_to(title, DOWN)
+        image = ImageMobject("data").set_width(12).next_to(title, DOWN)
         citation = MarkupText(f'Stahl (2006)').scale(0.35).next_to(image, DOWN, buff=0, aligned_edge=RIGHT)
         self.play(
             FadeIn(image),

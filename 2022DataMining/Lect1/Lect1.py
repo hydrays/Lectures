@@ -80,7 +80,7 @@ class A01a_BigPicture(Scene):
         caps1 = VGroup(*[
             MarkupText(f'1. Introduction'),
             MarkupText(f'2. Linear Regression'),
-            MarkupText(f'3. Automatic Differentiation'),
+            MarkupText(f'3. Back Propagation'),
             MarkupText(f'4. Bayesian Estimation')
         ]).scale(0.5).arrange(DOWN, buff=0.75, aligned_edge=LEFT).to_edge(LEFT, buff=1)
         self.add(title)
@@ -725,6 +725,7 @@ class A15a_Question(Scene):
         
         self.next_section("Question.2", type=PresentationSectionType.NORMAL)
         self.play(FadeOut(Q2))
+        self.play(FadeOut(caps))        
         self.play(FadeIn(Q3))
 
         self.next_section("Question.3", type=PresentationSectionType.NORMAL)

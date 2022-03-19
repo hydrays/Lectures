@@ -1,5 +1,7 @@
-from manimlib import *
+from manim import *
 from network import *
+from manim_editor import PresentationSectionType
+import manim
 import itertools as it
 
 class CodeLines(VGroup):
@@ -24,21 +26,345 @@ class CodeLine(Text):
 ####################
 # show time
 ####################
-        
-class OpeningScene(Scene):
+
+class A01_TitlePage(Scene):
     def construct(self):
-        text_color = BLACK
-        text_1 = Text("【深度学习】系列之三", color=text_color, font_size=50).to_edge(UP * 2, buff=1)
-        text_2 = Text("反向传播算法", color=text_color).to_edge(UP * 3.2, buff=1)
+        title = Text("数据挖掘与机器学习", font='MicroSoft YaHei', font_size = 75, color=BLACK).to_edge(UP, buff=1)
+        caps = VGroup(*[
+            Text(f'第三讲: How to Train Your Dragon', font='MicroSoft YaHei', font_size = 50, color=BLACK),
+            MarkupText(f'胡煜成 (hydrays@bilibili)', font='MicroSoft YaHei', font_size = 32, color=BLACK),
+            MarkupText(f'首都师范大学', font='MicroSoft YaHei', font_size = 36, color=BLACK),
+        ]).arrange(DOWN, buff=1).next_to(title, DOWN, buff=1)        
+        self.play(FadeIn(title, scale=1.5))
+        self.play(FadeIn(caps))
 
-        # self.add(picture)
-        self.wait(0.5)
-        self.play(Write(text_1))
-        self.wait(0.5)
-        self.play(Write(text_2), run_time=1.5)
-        self.wait(1.0)
+class A01a_Outline(Scene):
+    def construct(self):
+        title = Title("Overview", include_underline=True)
+        caps1 = VGroup(*[
+            MarkupText(f'1. Introduction', color=BLACK, font='MicroSoft YaHei'),
+            MarkupText(f'2. Linear Regression', color=BLACK, font='MicroSoft YaHei'),
+            MarkupText(f'3. Back Propagation', color=BLACK, font='MicroSoft YaHei'),
+            MarkupText(f'4. Bayesian Estimation', color=BLACK, font='MicroSoft YaHei')
+        ]).scale(0.5).arrange(DOWN, buff=0.75, aligned_edge=LEFT).to_edge(LEFT, buff=2)
+        self.add(title)
+        self.play(FadeIn(caps1))
 
-class Intro1(Scene):
+        caps2 = VGroup(*[
+            MarkupText(f'5. Clustering', color=BLACK, font='MicroSoft YaHei'),
+            MarkupText(f'6. Natural Language Processing', color=BLACK, font='MicroSoft YaHei'),
+            MarkupText(f'7. Bioinformatics', color=BLACK, font='MicroSoft YaHei'),
+            MarkupText(f'8. Computer Vision', color=BLACK, font='MicroSoft YaHei')
+        ]).scale(0.5).arrange(DOWN, buff=0.75, aligned_edge=LEFT).to_edge(RIGHT, buff=2)
+        self.play(FadeIn(caps2))
+
+class A01b_MLMap(Scene):
+    def construct(self):
+        ml_map = ImageMobject("ml_map")
+        ml_map.set_height(8.5).to_edge(LEFT, buff=0)
+        self.play(
+            FadeIn(ml_map)
+        )        
+
+class A02_BigPicture(Scene):
+    def construct(self):
+        title = Text("Supervised Learning", font='MicroSoft YaHei', font_size = 42, color=BLACK).to_edge(UP, buff=1)
+        self.play(FadeIn(title))
+
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r"\usepackage{bm}")        
+
+        caps = VGroup(*[
+            Tex(r'$ \mathbf{y}_i = $', r'$f_{\bm{\theta}} (\mathbf{x}_i) + \epsilon_i $', tex_template=myTemplate, color=BLACK),            
+            Tex(r'$ \displaystyle L[\bm{\theta}] = \sum_i ||\epsilon_i||^2 $', tex_template=myTemplate, color=BLACK),            
+        ]).scale(1.5).arrange(DOWN, buff=0.35).next_to(title, DOWN, buff=1.5)
+        rect = SurroundingRectangle(caps, buff=0.5, color=RED)
+        
+        self.play(
+            FadeIn(caps),
+            Create(rect, run_time = 5)
+        )
+
+        self.next_section("BigPicture.1", type=PresentationSectionType.NORMAL)
+        eqs = VGroup(caps, rect)
+        self.play(
+            eqs.animate.scale(0.6).to_edge(LEFT, buff=1), run_time=3,
+        )
+        codes = VGroup(*[
+            Tex(r'$\mathbf{x}$: size', color=BLACK),
+            Tex(r'room, city, year, traffic, CCTV, ...', color=BLACK).scale(0.65),            
+            Tex(r'$\mathbf{y}$: price', color=BLACK),              
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.5).next_to(eqs, RIGHT, buff=2)
+        codebg = BackgroundRectangle(codes,         
+        fill_color = "#EBEBEB",
+        fill_opacity = 1,
+        stroke_width = 1,
+        stroke_opacity = 1,
+        stroke_color = DARK_GRAY,
+        buff = 0.5)
+        code_name = Text(
+            "例1: 房价", color=BLACK
+        ).scale(0.75).next_to(codebg, UP)
+        self.play(Write(code_name))
+        self.play(FadeIn(codebg))
+        self.play(Write(codes[0]))
+        self.wait(.25)        
+        self.play(Write(codes[2]))                
+        self.wait(.25)
+        self.next_section("BigPicture.2", type=PresentationSectionType.NORMAL)        
+        self.play(Write(codes[1]))                
+
+        self.next_section("BigPicture.3", type=PresentationSectionType.NORMAL)
+        self.play(
+            FadeOut(code_name),
+            FadeOut(codebg),
+            FadeOut(codes),                        
+        )
+        codes = VGroup(*[
+            Tex(r'$\mathbf{x}$: price at $t$', color=BLACK),
+            Tex(r'price at $t-1, \cdots$, other stocks, oil, CCTV, ...', color=BLACK).scale(0.65),
+            Tex(r'$\mathbf{y}$: price at $t+1$', color=BLACK),              
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.5).next_to(eqs, RIGHT, buff=2)
+        codebg = BackgroundRectangle(codes,         
+        fill_color = "#EBEBEB",
+        fill_opacity = 1,
+        stroke_width = 1,
+        stroke_opacity = 1,
+        stroke_color = DARK_GRAY,
+        buff = 0.5)
+        code_name = Text(
+            "例2: 股票", color=BLACK
+        ).scale(0.75).next_to(codebg, UP)
+        self.play(Write(code_name))
+        self.play(FadeIn(codebg))
+        self.play(Write(codes[0]))
+        self.wait(.25)        
+        self.play(Write(codes[2]))                
+        self.next_section("BigPicture.4", type=PresentationSectionType.NORMAL)        
+        self.play(Write(codes[1]))                
+
+        self.next_section("BigPicture.5", type=PresentationSectionType.NORMAL)
+        self.play(
+            FadeOut(code_name),
+            FadeOut(codebg),
+            FadeOut(codes),                        
+        )
+        codes = VGroup(*[
+            Tex(r'$\mathbf{x}$: picture', color=BLACK),
+            Tex(r'$\mathbf{y}$: 0-9', color=BLACK),              
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.5).next_to(eqs, RIGHT, buff=2)
+        codebg = BackgroundRectangle(codes,         
+        fill_color = "#EBEBEB",
+        fill_opacity = 1,
+        stroke_width = 1,
+        stroke_opacity = 1,
+        stroke_color = DARK_GRAY,
+        buff = 0.5)
+        code_name = Text(
+            "例3: 手写数字", color=BLACK
+        ).scale(0.75).next_to(codebg, UP)
+        self.play(Write(code_name))
+        self.play(FadeIn(codebg))
+        self.play(Write(codes[0]))
+        self.play(Write(codes[1]))                
+
+        self.next_section("BigPicture.5", type=PresentationSectionType.NORMAL)
+        self.play(
+            FadeOut(code_name),
+            FadeOut(codebg),
+            FadeOut(codes),                        
+        )
+        codes = VGroup(*[
+            Tex(r'$\mathbf{x}$: measurements', color=BLACK),
+            Tex(r'$\mathbf{y}$: 0 (health), 1(disease)', color=BLACK),              
+        ]).arrange(DOWN, aligned_edge=LEFT, buff=0.5).next_to(eqs, RIGHT, buff=2)
+        codebg = BackgroundRectangle(codes,         
+        fill_color = "#EBEBEB",
+        fill_opacity = 1,
+        stroke_width = 1,
+        stroke_opacity = 1,
+        stroke_color = DARK_GRAY,
+        buff = 0.5)
+        code_name = Text(
+            "例4: AI医疗(算命)", color=BLACK
+        ).scale(0.75).next_to(codebg, UP)
+        self.play(Write(code_name))
+        self.play(FadeIn(codebg))
+        self.play(Write(codes[0]))
+        self.play(Write(codes[1]))                
+
+class A03_SingleNeuron(Scene):
+    def construct(self):
+        title = Title("Single Neuron", color=BLACK)
+        self.play(FadeIn(title))
+
+        single_neuron = ImageMobject("neuron")
+        single_neuron.set_width(6).to_edge(LEFT, buff=1)
+        self.play(
+            FadeIn(single_neuron)
+        )
+
+        self.next_section("SingleNeuron.1", type=PresentationSectionType.NORMAL)
+        neuron_action = ImageMobject("activate")
+        neuron_action.set_width(6).to_edge(RIGHT, buff=1)
+        self.play(
+            FadeIn(neuron_action)
+        )
+
+        citation = VGroup(*[
+            MarkupText(f'Source: https://appliedgo.net/perceptron/', color=BLACK).scale(0.35).to_edge(DOWN, buff=1)
+        ])
+        self.play(FadeIn(citation))
+
+        self.next_section("SingleNeuron.2", type=PresentationSectionType.NORMAL)
+        activation = ImageMobject("activation")
+        activation.set_width(6).next_to(neuron_action, buff=1)
+        citation2 = VGroup(*[
+            MarkupText(f'Source: https://kjhov195.github.io/2020-01-07-activation_function_2/', color=BLACK).scale(0.25).next_to(activation, DOWN, buff=0.1)
+        ])
+        image_group = Group(single_neuron, neuron_action, citation, activation, citation2)
+        
+        self.play(
+            FadeIn(activation, citation2),
+            FadeOut(citation),
+            image_group.animate.shift(6.5*LEFT)
+        )
+        
+class A04_NeuronNetwork(Scene):
+    def construct(self):
+        title = Title("Neuron Network", color=BLACK)
+        self.play(FadeIn(title))
+        
+        self.network = Network(sizes = [6, 4, 3, 1])
+        self.network_mob = NetworkMobject(
+            self.network,
+            neuron_radius = 0.1,
+            neuron_to_neuron_buff = MED_SMALL_BUFF,
+            layer_to_layer_buff = LARGE_BUFF,
+            neuron_stroke_color = GOLD,
+            neuron_stroke_width = 2,        
+            neuron_fill_color = GREEN,
+            edge_color = RED,
+            edge_stroke_width = 1
+        ).scale(1.75).to_edge(LEFT, buff=1).shift(0.5*DOWN)
+
+        neuron_groups = [
+            layer.neurons
+            for layer in self.network_mob.layers
+        ]
+                
+        for neuron in neuron_groups:
+            neuron.set_fill(color=GOLD, opacity = 1.0)
+
+        self.play(Create(self.network_mob))
+
+        words = VGroup(
+            MathTex("\mathbf{z}^{(0)}=\mathbf{x}",color=BLACK),
+            MathTex("\mathbf{z}^{(1)}",color=BLACK),
+            MathTex("\mathbf{z}^{(2)}",color=BLACK),
+            MathTex("\mathbf{z}^{(3)}=y",color=BLACK)
+        ).scale(.75)
+
+        neuron_groups = [
+            layer.neurons
+            for layer in self.network_mob.layers
+        ]
+        words[0].next_to(neuron_groups[0], UP)
+        words[1].next_to(neuron_groups[1], UP)
+        words[2].next_to(neuron_groups[2], UP)
+        words[3].next_to(neuron_groups[3], UP)
+
+        n1 = self.network_mob.layers[0].neurons[-1]
+        n2 = self.network_mob.layers[1].neurons[-1]
+        arrow1 = self.network_mob.get_edge(n1, n2)
+        n1 = self.network_mob.layers[1].neurons[-1]
+        n2 = self.network_mob.layers[2].neurons[-1]
+        arrow2 = self.network_mob.get_edge(n1, n2)
+        n1 = self.network_mob.layers[2].neurons[-1]
+        n2 = self.network_mob.layers[3].neurons[-1]
+        arrow3 = self.network_mob.get_edge(n1, n2)
+        coeff = VGroup(
+            MathTex("\mathbf{W}^{(1)}, \mathbf{b}^{(1)}",color=BLACK),
+            MathTex("\mathbf{W}^{(2)}, \mathbf{b}^{(2)}",color=BLACK),
+            MathTex("\mathbf{W}^{(3)}, \mathbf{b}^{(3)}",color=BLACK)
+        ).scale(0.5)
+        coeff[0].next_to(arrow1, DOWN, buff=0.2)
+        coeff[1].next_to(arrow2, DOWN, buff=0.2)
+        coeff[2].next_to(arrow3, DOWN, buff=0.2)
+        para = MathTex("\\theta",color=BLACK).next_to(neuron_groups[2], DOWN, buff=1)
+        para_arrows = VGroup(*[
+            Line(
+                para.get_left(),
+                coeff[0].get_right(),
+                color=BLACK,
+                buff = 0.2,
+                stroke_width = 2,
+                #tip_length = 0.25
+            ).add_tip(tip_length = 0.1),
+            Line(
+                para.get_top(),
+                coeff[1].get_bottom(),
+                color=BLACK,
+                buff = 0.2,
+                stroke_width = 2,
+                #tip_length = 0.25
+            ).add_tip(tip_length = 0.1),
+            Line(
+                para.get_top(),
+                coeff[2].get_bottom(),
+                color=BLACK,
+                buff = 0.2,
+                stroke_width = 2,
+                #tip_length = 0.25
+            ).add_tip(tip_length = 0.1)
+        ])
+
+        self.play(Write(words))
+        self.wait()
+        self.play(
+            Write(para),
+            Write(coeff),
+            LaggedStartMap(
+                GrowFromPoint, para_arrows,
+                lambda a : (a, a.get_start()),
+                run_time = 2
+            )
+        )
+
+        self.next_section("NeuronNetwork.1", type=PresentationSectionType.NORMAL)
+        eqs1 = VGroup(
+            MathTex(r'\mathbf{z}^{(0)} = \mathbf{x}',color=BLACK),
+            MathTex(r'\mathbf{z}^{(1)} = \sigma\left(\mathbf{W}^{(1)} \mathbf{z}^{(0)} + \mathbf{b}^{(1)}\right)',color=BLACK),
+            MathTex(r'\mathbf{z}^{(2)} = \sigma\left(\mathbf{W}^{(2)} \mathbf{z}^{(1)} + \mathbf{b}^{(2)}\right)',color=BLACK),
+            MathTex(r'\mathbf{z}^{(3)} = \sigma\left(\mathbf{W}^{(3)} \mathbf{z}^{(2)} + \mathbf{b}^{(3)}\right)',color=BLACK),
+            MathTex(r'y = \mathbf{z}^{(3)}', color=BLACK),
+        ).arrange(DOWN, center=False, aligned_edge=LEFT).scale(0.7).to_edge(RIGHT, buff=1).shift(1.75*UP)
+        
+        activation_function = VGroup(
+            MathTex("\\sigma(x) = \\frac{1}{1+e^{-x}}",color=BLACK).next_to(self.network_mob, DOWN).scale(1.25),
+        ).scale(.65).arrange(DOWN).next_to(eqs1, UP, buff=0.2)
+
+        eqs2 = VGroup(
+            MathTex(r'l(\theta) = (y - \hat{y})^2', color=BLACK),
+        ).arrange(DOWN, center=False, aligned_edge=LEFT).scale(0.85).next_to(eqs1, DOWN, buff=0.75)
+        
+        eqs_group = Group(eqs1, activation_function)
+        rect = SurroundingRectangle(eqs_group, color=RED, buff=0.25)
+        rect2 = SurroundingRectangle(eqs2, color=GREEN, buff=0.2)        
+        
+        self.play(FadeIn(eqs_group))
+        self.play(FadeIn(rect))
+
+        self.next_section("NeuronNetwork.2", type=PresentationSectionType.NORMAL)        
+        self.play(FadeIn(eqs2))        
+        self.play(Create(rect2))        
+
+        # losstext = MathTex("l(\\theta)",color=BLACK).next_to(eq1, DOWM)
+        # framebox = SurroundingRectangle(losstext, color = GREEN, buff = 0.2)
+        # loss = VGroup(losstext, framebox).scale(0.6)
+        # self.play(Create(loss))
+        
+class A05a_Intro1(Scene):
     def construct(self):
         codes = CodeLines(
             'alias: 98k',
@@ -79,10 +405,10 @@ class Intro1(Scene):
         self.play(Write(codes[4]))
         self.wait(2.25)        
 
-class Intro2(Scene):
+class A05b_Intro2(Scene):
     def construct(self):
         codes = CodeLines(
-            'alias: AUG',
+            'alias: M24',
             'size: 60,965,128',
             'year: 2012',
             'accuracy:',
@@ -96,8 +422,8 @@ class Intro2(Scene):
         stroke_color = DARK_GRAY,
         buff = 0.5)
         code_image = ImageMobject(
-            "aug",
-        ).scale(0.12).next_to(codebg, UP)
+            "M24",
+        ).set_width(4).next_to(codebg, UP)
         
         net = ImageMobject(
             "alexnet",            
@@ -119,7 +445,7 @@ class Intro2(Scene):
         self.play(Write(codes[4]))
         self.wait(2.25)            
 
-class Intro3(Scene):
+class A05c_Intro3(Scene):
     def construct(self):
         codes = CodeLines(
             'alias: AWP',
@@ -159,20 +485,59 @@ class Intro3(Scene):
         self.play(Write(codes[4]))
         self.wait(2.25)    
 
+class A05d_Others(Scene):
+    def construct(self):
+        images = Group()
+        image_labels = VGroup()
+        images_with_labels = Group()
+        names = ["SVM", "Random Forest", "Boosting"]        
+        for name in names:
+            image = ImageMobject(name)
+            image.set_width(4)
+            label = Text(name, font='MicroSoft YaHei', color=BLACK)
+            label.scale(0.5)
+            label.next_to(image, UP)
+            image.label = label
+            image_labels.add(label)
+            images.add(image)
+            images_with_labels.add(Group(image, label))
+        images_with_labels.arrange(RIGHT, buff=0.5)
+        #images_with_labels.to_edge(DOWN)
+        #images_with_labels.shift(MED_LARGE_BUFF * DOWN)
+
+        caps = Text("XGBoost: 数据挖掘竞赛神器", color=BLACK, font_size=25)
+        caps.next_to(images_with_labels[2], DOWN, buff=1).shift(1*LEFT)
+        arrow1 = Arrow(caps.get_top(), images_with_labels[2].get_bottom()+0.8*UP, color="RED", stroke_width=3, max_tip_length_to_length_ratio=0.1)
+        
+        self.play(FadeIn(images_with_labels[0]))
+        self.next_section("Others.1", type=PresentationSectionType.NORMAL)
+
+        self.play(FadeIn(images_with_labels[1]))
+        self.next_section("Others.2", type=PresentationSectionType.NORMAL)
+
+        self.play(FadeIn(images_with_labels[2]))
+        self.next_section("Others.1", type=PresentationSectionType.NORMAL)
+
+        self.play(
+            FadeIn(caps),
+            FadeIn(arrow1)
+        )
+        
 # class Bridge1(Scene):
 #     def construct(self):
 #         text_1 = Text("神经网络都要用到反向传播算法", color=BLACK, size=1)
 #         self.play(Write(text_1))
 
-class Motivation(Scene):
+class A06_Motivation(Scene):
     def construct(self):
         network = Network(sizes = [6, 4, 3, 1])
         network_mob = NewNetworkMobject(network)        
-        text_1 = Text("反向传播算法的数学本质是计算导数", color=BLACK, font_size=50).scale(0.75)
+        text_1 = Text("神经网络的本质是一个模型", color=BLACK, font_size=50).scale(0.75)
         self.play(text_1.animate.scale(1.33), run_time = 3)
+
+        self.next_section("Motivation.1", type=PresentationSectionType.NORMAL)
         self.play(text_1.animate.to_edge(UP).scale(0.75))
 
-        self.play(Create(network_mob), run_time = 1)
         symbol1 = MathTex("\\mathbf{x}_i",color=BLACK).next_to(network_mob, LEFT)
         symbol2 = MathTex("y_i",color=BLACK).next_to(network_mob, RIGHT)
         symbol3 = MathTex("\\theta",color=BLACK).next_to(network_mob, DOWN, buff=-0.25)
@@ -186,73 +551,100 @@ class Motivation(Scene):
         network_mob.add(symbol2)
         network_mob.add(symbol3)
         self.play(
-            network_mob.animate.scale(0.85).to_corner(UL, buff=2)
+            network_mob.animate.scale(0.85).to_corner(UL, buff=2).shift(1*RIGHT)
         )
 
-        text_2 = Text("神经网络的本质是一个函数", color=BLUE, font_size=35).next_to(network_mob, RIGHT, buff=1.5, aligned_edge=TOP)
-        self.add(text_2)
-        self.wait()
         equation1 = MathTex(r'y &= f_\theta(\mathbf{x})', color=BLACK).scale(0.85)
-        equation1.next_to(text_2, DOWN, buff=0.5)
-        self.play(Write(equation1))
+        equation1.next_to(network_mob, RIGHT, buff=1.5)
         framebox1 = SurroundingRectangle(equation1, color = RED, buff = 0.2)
-        self.play(Create(framebox1))
-        self.wait(2)
-        equation2 = MathTex(r'\frac{\partial f_\theta }{\partial \mathbf{x}}', color=BLACK).scale(0.85)
-        equation2.next_to(equation1, RIGHT, buff=1)        
-        self.add(equation2)
-        self.wait()
-
-        cross = VGroup(
-            Line(equation2.get_corner(UR), equation2.get_corner(DL), stroke_color = RED, stroke_width = 2),
-            Line(equation2.get_corner(UL), equation2.get_corner(DR), stroke_color = RED, stroke_width = 2),
+        self.play(
+            FadeIn(network_mob),
+            FadeIn(equation1),
+            FadeIn(framebox1),            
         )
-        self.play(Create(cross), run_time = 2)
-        self.wait(2)        
 
-        text_3 = VGroup(
-            Text("评价模型好坏：", color=BLACK),
-            MathTex(r'L(\theta) = \sum_i l_i(\theta), \ \ l_i(\theta)= (y_i - \hat{y}_i)^2 = (f_\theta(\mathbf{x}_i) - \hat{y}_i) ^2', color=BLACK).scale(1.25),
-        ).scale(0.5).arrange(RIGHT, aligned_edge = UP).shift(DOWN)
-        self.add(text_3)
-        self.wait(6)
+        text_1 = VGroup(            
+            Text("正向传播: ", color=RED),
+            Tex(r'$\mathbf{x}_i \rightarrow y_i$', color=BLACK).scale(1.5), 
+        ).scale(0.5).arrange(RIGHT, aligned_edge=ORIGIN, buff=0.2)
+        text_2 = VGroup(
+            Text("评价模型好坏: ", color=BLACK),
+            Tex(r'$L(\theta) = \sum_i l_i(\theta), \ \ l_i(\theta)= (y_i - \hat{y}_i)^2 = (f_\theta(\mathbf{x}_i) - \hat{y}_i) ^2$', color=BLACK).scale(1.25),
+        ).scale(0.5).arrange(RIGHT, aligned_edge=UP)
 
+        text_3 = VGroup(            
+            Text("反向传播: ", color=RED),
+            Tex(r'$\partial L / \partial \theta$', color=BLACK).scale(1.25), 
+        ).scale(0.5).arrange(RIGHT, aligned_edge=ORIGIN, buff=0.2)
         text_4 = VGroup(
-            Text("训练：找到使损失函数最小的", color=BLACK), 
-            MathTex("\\theta", color=BLACK).scale(1.25),            
-        ).scale(0.5).arrange(RIGHT, buff = 0.1).next_to(text_3, DOWN).align_to(text_3, LEFT)
-        self.add(text_4)
-        self.wait(5)
+            Text("训练: 找到使损失函数最小的模型参数", color=BLACK), 
+            MathTex(r'\displaystyle \theta^* = \mathrm{argmin}_\theta L(\theta) \\', color=BLACK).scale(1.5)            
+        ).scale(0.5).arrange(RIGHT, buff = 0.1)
 
-        equation3 = MathTex(r'\theta^* = \mathrm{argmin}_\theta L(\theta) \\', color=BLACK).scale(0.65)
-        equation3.next_to(text_4, RIGHT, buff=1.5)
-        self.add(equation3)
-        self.wait()
+        caps = VGroup(text_1, text_2, text_3, text_4).arrange(DOWN, aligned_edge=LEFT)
+        caps[2:4].shift(0.25*DOWN)
+        caps.to_edge(DOWN, buff=0.5)
+        
+        framebox1 = SurroundingRectangle(text_1, color = GREEN, buff = 0.2)
+        framebox2 = SurroundingRectangle(text_3, color = GREEN, buff = 0.2)
 
-        arrow1 = Arrow(text_4.get_right(), equation3.get_left(), stroke_color=BLACK)
-        self.play(Create(arrow1))
-        self.wait()
+        self.next_section("Motivation.2", type=PresentationSectionType.NORMAL)        
+        self.play(FadeIn(caps[0]))        
+        self.play(Create(framebox1))
+        self.play(FadeIn(caps[1]))                
 
-        text_5 = VGroup(
-            Text("优化问题", color=BLACK), 
-            MathTex("\\rightarrow", color=BLACK).scale(1.25), 
-            Text("求梯度（导数）", color=BLACK),
-        ).scale(0.5).arrange(RIGHT).next_to(text_4, DOWN).align_to(text_4, LEFT).shift(.5*DOWN)
-        self.add(text_5)
-        self.wait(3)
-
-        text_6 = VGroup(            
-            MathTex("\\frac{\\partial l}{\\partial \\theta}", color=BLACK).scale(1.25), 
-            MathTex("\\leftarrow", color=BLACK).scale(1.25),
-            Text("反向传播算法", color=RED),
-        ).scale(0.5).arrange(RIGHT, aligned_edge=ORIGIN).next_to(text_5, RIGHT, buff = 1.5)
-        self.add(text_6)
-        framebox2 = SurroundingRectangle(text_6, color = GREEN, buff = 0.2)
-        self.wait()
+        self.next_section("Motivation.3", type=PresentationSectionType.NORMAL)                
+        self.play(FadeIn(caps[2]))        
         self.play(Create(framebox2))
-        self.wait(2)
+        self.play(FadeIn(caps[3]))                
 
-class FeedForward(Scene):
+class A06a_SGD(Scene):
+    def construct(self):
+        title = Title("Stochastic Gradient Descent", color=BLACK)
+        self.play(FadeIn(title))
+        image1 = ImageMobject("gd").set_height(4.5).to_corner(UR, buff=1.25)
+        image2 = ImageMobject("landscape").set_height(4.5).to_corner(UR, buff=1.25)
+        
+        self.next_section("SGD.1", type=PresentationSectionType.NORMAL)
+        myTemplate = TexTemplate()
+        myTemplate.add_to_preamble(r"\usepackage{bm}")        
+        caps = VGroup(
+            Text(f'目标', font='MicroSoft YaHei', font_size = 36, color=BLACK).to_edge(UP, buff=1),
+            Tex(r'$\bm{\theta}^* = \mathop{\arg\min}\limits_{\bm{\theta}}  L[\bm{\theta}]$', tex_template=myTemplate, color=BLACK).scale(0.75),
+        ).arrange(DOWN, buff=0.75).to_edge(LEFT, buff=1)
+        rect = SurroundingRectangle(caps[1], buff=0.35, color=RED, corner_radius = 0.1)
+        self.play(
+            FadeIn(caps),
+            Create(rect),
+        )
+
+        self.next_section("SGD.2", type=PresentationSectionType.NORMAL)        
+        self.play(FadeIn(image1))
+
+        self.next_section("SGD.3", type=PresentationSectionType.NORMAL)        
+        update_rule = VGroup(
+            Text(f'迭代: ', font='MicroSoft YaHei', font_size = 36, color=BLACK).to_edge(UP, buff=1),            
+            MathTex(r'\bm{\theta} \leftarrow \bm{\theta} - \epsilon \frac{\partial L}{\partial \bm{\theta}}', color=BLACK, tex_template=myTemplate),
+        ).scale(0.75).arrange(RIGHT, buff=0.25).next_to(image2, DOWN).move_to(ORIGIN, coor_mask=np.array([1, 0, 0])).to_edge(DOWN, buff=1)
+        self.play(FadeIn(update_rule))
+        
+        self.next_section("SGD.4", type=PresentationSectionType.NORMAL)                
+        self.play(FadeOut(image1))
+        self.play(FadeIn(image2))
+
+        self.next_section("SGD.5", type=PresentationSectionType.NORMAL)                        
+        cap = VGroup(
+            Text(f'求梯度', font='MicroSoft YaHei', font_size = 36, color=BLACK).to_edge(UP, buff=1),
+            Text(f'to be continued ...', font='MicroSoft YaHei', font_size = 16, color=RED).to_edge(UP, buff=1),            
+        ).arrange(RIGHT, buff=0.25, aligned_edge=DOWN).next_to(update_rule, RIGHT, buff=1)
+        rect1 = SurroundingRectangle(cap, buff=0.35, color=RED, corner_radius = 0.1)
+        self.play(
+            FadeIn(cap[0]),
+            Create(rect1),
+            Write(cap[1])
+        )
+        
+class A07_FeedForward(Scene):
     def construct(self):
         self.network = Network(sizes = [6, 4, 3, 1])
         self.network_mob = NetworkMobject(
@@ -348,8 +740,42 @@ class FeedForward(Scene):
         self.network_mob.add(para)
         self.network_mob.add(para_arrows)
 
-        self.wait()
+        #self.network = self.network_mob.neural_network
+        in_vect = np.ones(self.network.sizes[0])
+        self.feed_forward(in_vect)
+        #self.wait()
+
+        n1 = self.network_mob.layers[2].neurons[1]
+        n2 = self.network_mob.layers[3].neurons[0]
+        buff = self.network_mob.neuron_radius
+        arrow = self.network_mob.get_edge(n1, n2)
+        arrow.next_to(n2, RIGHT, buff=buff)
+        self.play(FadeIn(arrow))
+        self.network_mob.add(arrow)
+
+        arrow_copy = arrow.copy()
+        arrow_copy.set_stroke(
+            self.network_mob.edge_propogation_color,
+            width = 3*self.network_mob.edge_stroke_width
+        )
+        self.play(
+            ShowPassingFlash(
+                arrow_copy.set_color(RED),
+                run_time = self.network_mob.edge_propogation_time,
+                lag_ratio = 0.8
+            )
+        )
+
+        losstext = MathTex("l(\\theta)",color=BLACK).next_to(arrow, RIGHT)
+        framebox = SurroundingRectangle(losstext, color = GREEN, buff = 0.2)
+        loss = VGroup(losstext, framebox).scale(0.6)
+        self.play(FadeIn(loss))
+        self.network_mob.add(loss)
+        
+
+        self.next_section("FeedForward.1", type=PresentationSectionType.NORMAL)
         self.play(self.network_mob.animate.to_corner(UL).scale(0.75).shift(.75*UP))
+
         eqs1 = VGroup(
             MathTex(r'\mathbf{z}^{(0)} = \mathbf{x}',color=BLACK),
             MathTex(r'\mathbf{z}^{(1)} = \sigma\left(\mathbf{W}^{(1)} \mathbf{z}^{(0)} + \mathbf{b}^{(1)}\right)',color=BLACK),
@@ -364,44 +790,14 @@ class FeedForward(Scene):
         ).scale(.4).arrange(DOWN).next_to(eqs1, RIGHT, buff=0.5)
 
         state = Text("正向传播", color=GREEN).scale(0.55).next_to(neuron_groups[0], DOWN, buff=.75)
-
-        self.wait()
-        self.play(Write(eqs1))
-        self.wait()
-        self.add(activation_function)
-        self.wait()
-
-        #self.network = self.network_mob.neural_network
+        
         self.add(state)
-        in_vect = np.ones(self.network.sizes[0])
-        self.feed_forward(in_vect)
-        #self.wait()
-
-        n1 = self.network_mob.layers[2].neurons[1]
-        n2 = self.network_mob.layers[3].neurons[0]
-        buff = self.network_mob.neuron_radius
-        arrow = self.network_mob.get_edge(n1, n2)
-        arrow.next_to(n2, RIGHT, buff=buff)
-        self.add(arrow)
-
-        arrow_copy = arrow.copy()
-        arrow_copy.set_stroke(
-            self.network_mob.edge_propogation_color,
-            width = 1.5*self.network_mob.edge_stroke_width
-        )
         self.play(
-            ShowPassingFlash(
-                arrow_copy, 
-                run_time = self.network_mob.edge_propogation_time,
-                lag_ratio = 0.8
-            )
+            FadeIn(eqs1),
+            FadeIn(activation_function),
         )
-
-        losstext = MathTex("l(\\theta)",color=BLACK).next_to(arrow, RIGHT)
-        framebox = SurroundingRectangle(losstext, color = GREEN, buff = 0.2)
-        loss = VGroup(losstext, framebox).scale(0.6)
-        self.play(Create(loss))
-
+                
+        self.next_section("FeedForward.2", type=PresentationSectionType.NORMAL)        
         quest = VGroup(
             Text("问题： 给定", color=BLACK, font_size=25),
             MathTex("\\mathbf{x}",color=BLACK).scale(0.65),
@@ -493,13 +889,13 @@ class FeedForward(Scene):
 #         self.play(Write(text_2), run_time=1.5)
 #         self.wait(1.0)
 
-class ChainRule(Scene):
+class A08_ChainRule(Scene):
     def construct(self):
         text1 = Text("反向传播的数学基础是链式法则", color=BLACK, font_size=50)
         self.play(Write(text1))
-        self.wait()
-        self.play(text1.animate.to_edge(TOP, buff=0.1).scale(0.85))
-        self.wait()
+        
+        self.next_section("ChainRule.1", type=PresentationSectionType.NORMAL)
+        self.play(text1.animate.to_edge(UP, buff=0.1).scale(0.85))
         
         eq1_left = MathTex(r'l(\theta) = h(g(\theta))', color=BLACK)
         eq1_right = MathTex(r'\frac{\partial l}{\partial \theta} = \frac{\partial h}{\partial g} \cdot \frac{\partial g}{\partial \theta}', color=BLACK)        
@@ -539,40 +935,36 @@ class ChainRule(Scene):
         lhs.next_to(text1, DOWN, buff=0.5).shift(2*LEFT)
         
         mob_eq = MathTex(r'\frac{\Delta l}{\Delta \theta} = \frac{\Delta l}{\Delta g} \cdot \frac{\Delta g}{\Delta \theta} ', color=BLACK)
-        mob_eq.next_to(eq1_right, DOWN).align_to(mobs)
-        eq1_right.next_to(mob_eq, DOWN, buff=1.5)
+        #mob_eq.next_to(mobs, RIGHT, aligned_edge=ORIGIN)
+        eq1_right.next_to(mob_eq, DOWN, buff=1.25)
 
         rhs = VGroup(
             mob_eq,
             eq1_right,
         ).scale(0.5).next_to(lhs, RIGHT, buff = 1.5)
 
-        arrow_left = Arrow(mobs.get_bottom(), eq1_left.get_top(), color = BLACK, buff=0.15)
+        arrow_left = Arrow(eq1_left.get_top(), mobs.get_bottom(), color = BLACK, buff=0.15)
         #arrow_right = Arrow(mob_eq.get_bottom(), eq1_right.get_top(), color = BLACK, buff=1)
         arrow_top = Arrow(mobs.get_right(), mobs.get_right() + 1.5*RIGHT, color = BLACK, buff=0.4)
-        arrow_right = arrow_left.copy()
-        arrow_right.move_to(mob_eq.get_center(), coor_mask=np.array([1, 0, 0]))
+        arrow_right = Arrow(rhs[0].get_bottom(), rhs[1].get_top(), color = BLACK, buff=0.15)
         #self.add(eq1)
-        #self.wait()
-        self.add(lhs)
-        self.add(rhs)
-        self.add(arrow_left)
-        self.add(arrow_right)
-        self.add(arrow_top)
 
-        # self.play(Write(symbol1))
-        # self.wait()
-        # self.play(Create(arrow1))
-        # self.wait()
-        # self.play(Write(symbol2))
-        # self.wait()
-        # self.play(Create(arrow2))
-        # self.wait()
-        # self.play(Write(symbol3))
-        # self.wait()
-        # self.add(text2)
-        # self.wait()
+        self.next_section("ChainRule.1.1", type=PresentationSectionType.NORMAL)
+        self.play(FadeIn(lhs[1]))
+        
+        self.next_section("ChainRule.1.2", type=PresentationSectionType.NORMAL)
+        self.play(Create(arrow_left))
+        self.play(FadeIn(lhs[0]))
 
+        self.next_section("ChainRule.1.3", type=PresentationSectionType.NORMAL)        
+        self.play(Create(arrow_top))
+        self.play(FadeIn(rhs[0]))
+
+        self.next_section("ChainRule.1.4", type=PresentationSectionType.NORMAL)        
+        self.play(Create(arrow_right))
+        self.play(FadeIn(rhs[1])        )
+        
+        self.next_section("ChainRule.2", type=PresentationSectionType.NORMAL)        
         self.network = Network(sizes = [6, 4, 3, 1])
         self.network_mob = NetworkMobject(
             self.network,
@@ -649,14 +1041,15 @@ class ChainRule(Scene):
         ).scale(0.5).arrange(DOWN)
         framebox_mark1 = SurroundingRectangle(mark1, color = RED, buff = 0.1, stroke_width = 0.5)
         mark1.add(framebox_mark1)
-        mark1.next_to(quest1_copy, TOP, buff=0.1).shift(.5*LEFT)
+        mark1.next_to(quest1_copy, UP, buff=0.1).shift(.5*LEFT)
              
-        self.add(quest1_copy)
+        self.play(FadeIn(quest1_copy))
         quest1_text = Text("任务一", color=GREEN, font_size=20).next_to(quest1_copy, LEFT, buff=0.5)
-        self.add(quest1_text)
-        self.add(mark1)
-
+        self.play(FadeIn(quest1_text))
+        self.play(FadeIn(mark1))
+        
         ### quest 2 ###
+        self.next_section("ChainRule.3", type=PresentationSectionType.NORMAL)        
         quest2 = VGroup()
         l1 = self.network_mob.layers[1]
         l2 = self.network_mob.layers[2]
@@ -749,14 +1142,12 @@ class ChainRule(Scene):
 
 
         quest2.scale(1.5).move_to(3*RIGHT).align_to(quest1_copy, DOWN)
-        self.add(quest2)
-        self.wait()
+        self.play(FadeIn(quest2))
         quest2_text = Text("任务二", color=GREEN, font_size=20).next_to(quest2, LEFT, buff=0.5).align_to(quest1_text, DOWN)
-        self.add(quest2_text)
-        mark2.next_to(quest2, TOP, buff=0).shift(0*RIGHT)
-        self.add(mark2)
-
-
+        self.play(FadeIn(quest2_text))
+        mark2.next_to(quest2, UP, buff=0).shift(0*RIGHT)
+        self.play(FadeIn(mark2))
+        
         # ##previous quest animation
         # ### quest 1 ###
         # quest1 = VGroup()
@@ -869,7 +1260,7 @@ class ChainRule(Scene):
     #         self.edge_groups.add(edge_group)
     #     self.add_to_back(self.edge_groups)
 
-class Quest1(Scene):
+class A09_Quest1(Scene):
     def construct(self):
         self.network = Network(sizes = [6, 4, 3, 1])
         self.network_mob = NetworkMobject(
@@ -915,7 +1306,7 @@ class Quest1(Scene):
         quest1.add(up_edge)
         quest1.add(middle_neuron)
         quest1.add(up_neuron)
-
+        
         down_edge = DashedLine(
             middle_neuron.get_center(), 
             middle_neuron.get_center() + 0.75*RIGHT, 
@@ -939,6 +1330,8 @@ class Quest1(Scene):
         quest1.add(symbols2)
         quest1.add(symbols3)
 
+        self.next_section("Quest1.1", type=PresentationSectionType.NORMAL)
+        
         eqs1 = MathTex(r'\frac{\partial l }{\partial z^{(k)}_{t}}', color=GREEN).scale(0.4)            
         eqs2 = MathTex(r' \frac{\partial l }{\partial w^{(k)}_{ts}}', r' =  \frac{\partial l }{\partial z^{(k)}_t}', r'\cdot \frac{\partial z^{(k)}_t}{\partial w^{(k)}_{ts}}', color=BLACK).scale(0.5)
         eqs2[1].set_color(GREEN)
@@ -1022,17 +1415,14 @@ class Quest1(Scene):
         #lower_rows = VGroup(dots_row, row_t, dots_row)
 
         #Wmatrix = Matrix([[w_{11}^{(2)}, w_{12}^{(2)}], [-1, 1]])
-
         quest1_text = Text("任务一", color=BLACK, font_size=25).to_corner(UL)
         self.add(quest1_text)
 
         quest1.move_to(1.5*UP + 3*LEFT)
         self.add(quest1.scale(2))
-        self.wait()
 
         text1 = Text("中间变量", color=BLACK, font_size=20).next_to(down_edge, UP, aligned_edge = RIGHT, buff=0.5)
         self.add(text1)
-        self.wait()
 
         arrow1 = Arrow(
             text1.get_corner(DL),
@@ -1041,41 +1431,31 @@ class Quest1(Scene):
             buff = 0.1,
         )
         self.add(arrow1)
-        self.wait()
-
+        
         eqs1.next_to(down_edge, DOWN, buff=0.1)
-        self.add(eqs1)
-        self.wait()
+        self.play(FadeIn(eqs1))
 
+        self.next_section("Quest1.2", type=PresentationSectionType.NORMAL)
         eqs2.next_to(quest1, DOWN, aligned_edge = LEFT)
-        self.add(eqs2)
-        self.wait()
+        self.play(FadeIn(eqs2))
+
+        self.next_section("Quest1.3", type=PresentationSectionType.NORMAL)        
         mark1.next_to(eqs2, RIGHT, buff=1)
-        self.add(mark1)
-        self.wait()
+        self.play(FadeIn(mark1))
 
+        self.next_section("Quest1.4", type=PresentationSectionType.NORMAL)
         eqs3.next_to(eqs2, DOWN, aligned_edge = LEFT)
-        self.add(eqs3)
-        self.wait()
-        eqs4.next_to(eqs3, DOWN, aligned_edge = LEFT)
-        self.add(eqs4)
-        self.wait()
-        mark2.next_to(eqs4, RIGHT).align_to(mark1, RIGHT)
-        self.add(mark2)
-        #self.play(FocusOn(mark2))
-        self.wait()
-
-        eqs45.next_to(eqs4, DOWN, aligned_edge = LEFT)
-        self.add(eqs45)
-        self.wait()
-
+        self.play(FadeIn(eqs3))
+        
+        self.next_section("Quest1.5", type=PresentationSectionType.NORMAL)
         ## 
         ## add explaination matrix
         ##
-        eqs6.to_edge(TOP, buff=0.15).to_edge(RIGHT, buff=3)
+        eqs6.to_edge(UP, buff=0.15).to_edge(RIGHT, buff=3)
         self.add(eqs6)
-        self.wait()
 
+        self.wait(5)        
+        self.next_section("Quest1.6", type=PresentationSectionType.NORMAL)
         symbols4 = MathTex("a_1",color=BLACK).scale(0.5)#.next_to(quest1[1][0], RIGHT, buff=2)
         symbols5 = MathTex("a_t",color=BLACK).scale(0.5)#.next_to(quest1[1][1], RIGHT, buff=2)
         symbols6 = MathTex("a_3",color=BLACK).scale(0.5)#.next_to(quest1[1][2], RIGHT, buff=2)
@@ -1090,48 +1470,55 @@ class Quest1(Scene):
         symbols7.next_to(agroup, RIGHT)
         agroup.add(symbols7)
         agroup.next_to(eqs6, DOWN, aligned_edge = LEFT, buff=0.5)
-        self.add(agroup) 
-        self.wait()
-
+        self.add(agroup)
         wmatrix.add(brackets).scale(0.6).next_to(agroup, RIGHT)
         self.add(wmatrix)
-        self.wait()
-
         zvector.scale(0.6).next_to(wmatrix, RIGHT)
         symbols8.next_to(zvector, RIGHT)
         zvector.add(symbols8)
         self.add(zvector)
-        self.wait()
-
         bvector.scale(0.6).next_to(zvector, RIGHT)
-        self.add(bvector)
-        self.wait()
+        self.play(FadeIn(bvector))
 
+        self.next_section("Quest1.7", type=PresentationSectionType.NORMAL)
         self.play(
-            Circumscribe(agroup[1]),
-            Circumscribe(wmatrix[1]),
-            Circumscribe(zvector[0:4]),
-            Circumscribe(bvector[1]),
+            Create(BackgroundRectangle(agroup[1], color=GREEN, stroke_width=1, buff=0.06, corner_radius=0.06)),
+            Create(BackgroundRectangle(wmatrix[1], color=GREEN, stroke_width=1, buff=0.06, corner_radius=0.06)),
+            Create(BackgroundRectangle(zvector[0:4], color=GREEN, stroke_width=1, buff=0.06, corner_radius=0.06)),
+            Create(BackgroundRectangle(bvector[1], color=GREEN, stroke_width=1, buff=0.06, corner_radius=0.06)),            
         )
-
         eqs7.scale(0.5).next_to(agroup, DOWN, buff=0.5, aligned_edge=LEFT)
         self.add(eqs7)
-        self.wait()
+        self.play(Create(SurroundingRectangle(eqs7, color=GREEN, stroke_width=2, buff=0.1, corner_radius=0.06)))
 
+        self.next_section("Quest1.8", type=PresentationSectionType.NORMAL)
+        eqs4.next_to(eqs3, DOWN, aligned_edge = LEFT)
+        self.play(FadeIn(eqs4))
+        
+        self.next_section("Quest1.9", type=PresentationSectionType.NORMAL)
+        mark2.next_to(eqs4, RIGHT).align_to(mark1, RIGHT)
+        self.play(FadeIn(mark2))
+        #self.play(FocusOn(mark2))
+
+        self.next_section("Quest1.10", type=PresentationSectionType.NORMAL)
+        
+        eqs45.next_to(eqs4, DOWN, aligned_edge = LEFT)
+        self.play(FadeIn(eqs45))
+        
         # eqs8.scale(0.5).next_to(eqs7, DOWN, buff=0.5, aligned_edge=LEFT)
         # self.add(eqs8)
         # self.wait()
-
+        
+        self.next_section("Quest1.11", type=PresentationSectionType.NORMAL)        
         result = VGroup(
             eqs5,
             eqs9,
         ).arrange(DOWN, center=False, aligned_edge = LEFT).scale(0.6).next_to(eqs7, DOWN, aligned_edge = LEFT, buff=1.5)
-        framebox_result = SurroundingRectangle(result, color = RED, buff = 0.2)
+        framebox_result = SurroundingRectangle(result, color = RED, buff = 0.2, corner_radius=0.1)
         result.add(framebox_result)
 
-        self.add(result)
-        self.wait()
-
+        self.play(FadeIn(result))
+        
     def get_brackets(self, mob):
         lb, rb = both = MathTex("(", ")")
         both.set_width(0.25)
@@ -1140,7 +1527,7 @@ class Quest1(Scene):
         rb.next_to(mob, RIGHT, SMALL_BUFF).set_color(BLACK)
         return both
 
-class Quest2(Scene):
+class A10_Quest2(Scene):
     def construct(self):
         self.network = Network(sizes = [6, 4, 3, 1])
         self.network_mob = NetworkMobject(
@@ -1252,9 +1639,10 @@ class Quest2(Scene):
         quest2.add(eqs1)
 
         quest2.move_to(1.5*UP + 3*LEFT)
-        self.add(quest2.scale(2))
-        self.wait()
+        self.play(FadeIn(quest2.scale(2)))
 
+        self.next_section("Quest2.1", type=PresentationSectionType.NORMAL)
+        
         eqs2 = MathTex(r' \frac{\partial l }{\partial z^{(k-1)}_{s}} =  \sum_t ', r'\frac{\partial l }{\partial z^{(k)}_t}', r'\cdot \frac{\partial z^{(k)}_t}{\partial z^{(k-1)}_{s}}', color=BLACK).scale(0.5)
         eqs2[1].set_color(GREEN)
         eqs3 = MathTex(r'z^{(k)}_t} = \sigma \left(a_t^{(k)}\right)', color=BLACK).scale(.5)
@@ -1315,34 +1703,24 @@ class Quest2(Scene):
         bbrackets = self.get_brackets(bvector)
         bbrackets.set_color(BLACK)
         bvector.add(bbrackets)
-
+        
         eqs2.next_to(quest2, DOWN, aligned_edge = LEFT)
-        self.add(eqs2)
-        self.wait()
+        self.play(FadeIn(eqs2))
+
+        self.next_section("Quest2.2", type=PresentationSectionType.NORMAL)                
         mark1.to_edge(RIGHT).next_to(eqs2, RIGHT)
-        self.add(mark1)
-        self.wait()
+        self.play(FadeIn(mark1))
 
+        self.next_section("Quest2.3", type=PresentationSectionType.NORMAL)                
         eqs3.next_to(eqs2, DOWN, aligned_edge = LEFT)
-        self.add(eqs3)
-        self.wait()
-        eqs4.next_to(eqs3, DOWN, aligned_edge = LEFT)
-        self.add(eqs4)
-        self.wait()
-        mark2.to_edge(RIGHT).next_to(eqs4, RIGHT)
-        self.add(mark2)
-        self.wait()
+        self.play(FadeIn(eqs3))
 
-        eqs45.next_to(eqs4, DOWN, aligned_edge = LEFT)
-        self.add(eqs45)
-        self.wait()
-
+        self.next_section("Quest2.4", type=PresentationSectionType.NORMAL)                
         ## 
         ## add explaination matrix
         ##
-        eqs6.to_edge(TOP, buff=0.15).to_edge(RIGHT, buff=3)
-        self.add(eqs6)
-        self.wait()
+        eqs6.to_edge(UP, buff=0.15).to_edge(RIGHT, buff=3)
+        self.play(FadeIn(eqs6))
 
         symbols4 = MathTex("a_1",color=BLACK).scale(0.5)#.next_to(quest1[1][0], RIGHT, buff=2)
         symbols5 = MathTex("a_t",color=BLACK).scale(0.5)#.next_to(quest1[1][1], RIGHT, buff=2)
@@ -1359,45 +1737,44 @@ class Quest2(Scene):
         agroup.add(symbols7)
         agroup.next_to(eqs6, DOWN, aligned_edge = LEFT, buff=0.5)
         self.add(agroup) 
-        self.wait()
-
         wmatrix.add(brackets).scale(0.6).next_to(agroup, RIGHT)
         self.add(wmatrix)
-        self.wait()
-
         zvector.scale(0.6).next_to(wmatrix, RIGHT)
         symbols8.next_to(zvector, RIGHT)
         zvector.add(symbols8)
         self.add(zvector)
-        self.wait()
-
         bvector.scale(0.6).next_to(zvector, RIGHT)
         self.add(bvector)
-        self.wait()
 
         self.play(
-            Circumscribe(agroup[1]),
-            Circumscribe(wmatrix[1]),
-            Circumscribe(zvector[0:4]),
-            Circumscribe(bvector[1]),
+            Create(BackgroundRectangle(agroup[1], color=GREEN, stroke_width=1, buff=0.06, corner_radius=0.06)),
+            Create(BackgroundRectangle(wmatrix[1], color=GREEN, stroke_width=1, buff=0.06, corner_radius=0.06)),
+            Create(BackgroundRectangle(zvector[0:4], color=GREEN, stroke_width=1, buff=0.06, corner_radius=0.06)),
+            Create(BackgroundRectangle(bvector[1], color=GREEN, stroke_width=1, buff=0.06, corner_radius=0.06)),            
         )
-
         eqs7.scale(0.5).next_to(agroup, DOWN, buff=0.5, aligned_edge=LEFT)
-        self.add(eqs7)
-        self.wait()
+        self.play(FadeIn(eqs7))
 
-        # eqs8.scale(0.5).next_to(eqs7, DOWN, buff=0.5, aligned_edge=LEFT)
-        # self.add(eqs8)
-        # self.wait()
+        self.next_section("Quest2.5", type=PresentationSectionType.NORMAL)                        
+        eqs4.next_to(eqs3, DOWN, aligned_edge = LEFT)
+        self.play(FadeIn(eqs4))
 
+        self.next_section("Quest2.6", type=PresentationSectionType.NORMAL)                        
+        mark2.to_edge(RIGHT).next_to(eqs4, RIGHT)
+        self.play(FadeIn(mark2))
+
+        self.next_section("Quest2.7", type=PresentationSectionType.NORMAL)                        
+        eqs45.next_to(eqs4, DOWN, aligned_edge = LEFT)
+        self.play(FadeIn(eqs45))
+
+        self.next_section("Quest2.8", type=PresentationSectionType.NORMAL)
         result = VGroup(
             eqs5,            
         ).arrange(DOWN, center=False, aligned_edge = LEFT).scale(0.6).next_to(eqs7, DOWN, aligned_edge = LEFT, buff=1.5)
-        framebox_result = SurroundingRectangle(result, color = RED, buff = 0.2)
+        framebox_result = SurroundingRectangle(result, color = RED, buff = 0.2, corner_radius=0.1)
         result.add(framebox_result)
 
-        self.add(result)
-        self.wait()
+        self.play(FadeIn(result))
 
     def get_brackets(self, mob):
         lb, rb = both = MathTex("(", ")")
@@ -1408,13 +1785,13 @@ class Quest2(Scene):
         return both
 
 
-class BackPropagation(Scene):
+class A11_BackPropagation(Scene):
     def construct(self):
         text1 = Text("反向传播", color=BLACK, font_size=50)
         self.play(Write(text1))
-        self.wait()
-        self.play(text1.animate.to_edge(TOP, buff=0.1))
-        self.wait()
+
+        self.next_section("BP.1", type=PresentationSectionType.NORMAL)        
+        self.play(text1.animate.to_edge(UP, buff=0.1))
         
         self.network = Network(sizes = [6, 4, 3, 1])
         self.network_mob = NetworkMobject(
@@ -1442,7 +1819,6 @@ class BackPropagation(Scene):
         self.network_mob.add(arrow)
         self.network_mob.move_to(0)
         self.add(self.network_mob.scale(1.5))
-        self.wait()
 
         neuron_groups = [
             layer.neurons
@@ -1490,6 +1866,7 @@ class BackPropagation(Scene):
         quest1.add(loss)
 
         ### quest 2 ###
+        self.next_section("BP.2", type=PresentationSectionType.NORMAL)
         quest2 = VGroup()
         up_node = neuron_groups[1][2].copy()
         up_node.set_stroke(color = RED).set_fill(color=GOLD, opacity = 1.0)   
@@ -1528,20 +1905,15 @@ class BackPropagation(Scene):
 
         quest1.next_to(self.network_mob, UP, buff=0.1).scale(0.75)
         self.play(FadeIn(quest1))
-        self.wait()
 
         quest2.next_to(self.network_mob, DOWN, buff=0.1).scale(0.75)
         self.play(FadeIn(quest2))
-        self.wait()
 
         self.add(word)
-        self.wait()
         self.add(eqs1)
-        self.wait()
 
         in_vect = np.random.random(self.network.sizes[0])
         self.back_propagation(in_vect)
-        self.wait() 
 
     def back_propagation(self, input_vector, false_confidence = False, added_anims = None):        
         if added_anims is None:
@@ -1569,20 +1941,19 @@ class BackPropagation(Scene):
             l1 = self.network_mob.layers[layer_index]
             l2 = self.network_mob.layers[layer_index-1]
             edge_group = VGroup()
-            for n1, n2 in it.product(l1.neurons, l2.neurons):
-                edge = self.network_mob.get_edge(n1, n2)
-                edge_group.add(edge)        
-            anims = [Transform(edge_group, edge_group.set_stroke(color = GOLD))]
-            active_layer.set_stroke(color = RED).set_fill(color=GOLD, opacity = 1.0)
-            anims = anims + [Transform(layer, active_layer)]
-        # if layer_index > 0:
-        #     anims += self.network_mob.get_edge_propogation_animations(
-        #         layer_index-1
-        #     )
-            anims += added_anims
-            self.play(*anims)   
-
-class Summary(Scene):
+            for n1 in l1.neurons:
+                active_n1 = n1.copy()
+                active_n1.set_stroke(color = RED).set_fill(color=GOLD, opacity = 1.0)
+                anims = [Transform(n1, active_n1)]
+                anims += added_anims
+                self.play(*anims)   
+                for n2 in l2.neurons:
+                    edge = self.network_mob.get_edge(n1, n2, buff=1.5)
+                    anims = [Transform(edge, edge.set_stroke(color = RED, width = 2))]
+                    anims += added_anims
+                    self.play(*anims)   
+            
+class A12_Summary(Scene):
     def construct(self):        
         self.network = Network(sizes = [6, 4, 3, 1])
         self.network_mob = NetworkMobject(
@@ -1595,7 +1966,7 @@ class Summary(Scene):
             neuron_fill_color = GREEN,
             edge_color = GREY_B,
             edge_stroke_width = 1
-        ).shift(2*DOWN)
+        ).shift(2*UP).scale(1.5).stretch_to_fit_width(6).shift(RIGHT)
 
         ### framework
         framework = VGroup(
@@ -1603,26 +1974,43 @@ class Summary(Scene):
             Text("前馈计算损失函数", color=BLACK),
             Text("反向传播计算梯度", color=BLACK),
             Text("更新参数", color=BLACK),
-        ).scale(0.5).arrange(RIGHT, buff = 0.5).to_edge(TOP, buff=0.05)
+        ).scale(0.5).arrange(DOWN, buff = 1).to_edge(LEFT, buff=1).shift(UP)
         self.add(framework)
 
         update_rule = VGroup(
-            MathTex(r'\mathbf{W} \leftarrow \mathbf{W} + \epsilon \frac{\partial l}{\partial \mathbf{W}}', color=BLACK),
-            MathTex(r'\mathbf{b} \leftarrow \mathbf{b} + \epsilon \frac{\partial l}{\partial \mathbf{b}}', color=BLACK),
-        ).scale(0.5).arrange(RIGHT).to_edge(BOTTOM, buff=0.1)
+            MathTex(r'\mathbf{W} \leftarrow \mathbf{W} - \epsilon \frac{\partial l}{\partial \mathbf{W}}', color=BLACK),
+            MathTex(r'\mathbf{b} \leftarrow \mathbf{b} - \epsilon \frac{\partial l}{\partial \mathbf{b}}', color=BLACK),
+        ).scale(0.5).arrange(DOWN, buff=0.25, aligned_edge=RIGHT).next_to(framework, DOWN, buff=1)
+
 
         n1 = self.network_mob.layers[2].neurons[1]
         n2 = self.network_mob.layers[3].neurons[0]
         buff = self.network_mob.neuron_radius
         arrow = self.network_mob.get_edge(n1, n2)
-        arrow.next_to(n2, RIGHT, buff=buff)
-
-        losstext = MathTex("l(\\theta)",color=BLACK).next_to(arrow, RIGHT)
+        arrow.next_to(n2, RIGHT, buff=0)
+        
+        losstext = MathTex("l(\\theta)",color=BLACK).next_to(arrow, RIGHT, buff=0)
         framebox = SurroundingRectangle(losstext, color = GREEN, buff = 0.2)
-        loss = VGroup(losstext, framebox).scale(0.6)
+        loss = VGroup(losstext, framebox).scale(0.5)
+        input_X = VGroup(
+            MathTex(r'\mathbf{X}', color=BLACK)
+        ).scale(0.75).next_to(self.network_mob, LEFT, buff=0.65)
+
+        input_arrows = VGroup()
+        for n1 in self.network_mob.layers[0].neurons:
+            input_arrow = Line(
+                input_X.get_right(),
+                n1.get_center(),
+                buff = 0,
+                stroke_color = self.network_mob.edge_color,
+                stroke_width = self.network_mob.edge_stroke_width,
+            )
+            input_arrows.add(input_arrow)
+            
         self.network_mob.add(loss)
         self.network_mob.add(arrow)
-        self.network_mob.move_to(2*UP)
+        ##self.network_mob.add(input_X)        
+        ##self.network_mob.move_to(2*UP)
 
         neuron_groups = [
             layer.neurons
@@ -1632,10 +2020,12 @@ class Summary(Scene):
             layer.neurons
             for layer in self.network_mob.layers
         ]))
-        all_neurons.set_fill(color=GREEN, opacity = 1.0)
+        ##all_neurons.set_fill(color=GREEN, opacity = 1.0)
 
+        ##self.network_mob.to_edge(RIGHT, buff=1)
         self.add(self.network_mob)
         self.wait()
+        
         # in_vect = np.random.random(self.network.sizes[0])
         # self.back_propagation(in_vect)
         # self.wait() 
@@ -1662,7 +2052,7 @@ class Summary(Scene):
         objecteq = MathTex(r'l(\theta) = (y - \hat{y})^2', color=BLACK).move_to(objectrect.get_center()).scale(0.8)
         objectbox.add(objectrect)
         objectbox.add(objecteq)
-        objectbox.scale(0.5).next_to(upper_chain, RIGHT, buff=1.25, aligned_edge=BOTTOM)
+        objectbox.scale(0.5).next_to(upper_chain, RIGHT, buff=1.25, aligned_edge=DOWN)
 
         upper_hatch = Arc(
             radius = 0.4,
@@ -1685,7 +2075,7 @@ class Summary(Scene):
         upper_chain.add(objectbox)
         upper_chain.add(upper_arrows)
         upper_chain.add(upper_hatch)
-        upper_chain.next_to(self.network_mob, DOWN)
+        upper_chain.next_to(self.network_mob, DOWN, buff=0.5, aligned_edge=LEFT)#.shift(.5*RIGHT)
         #equnit4 = self.get_equnit_backward(3).shift(4*RIGHT).shift(2*DOWN)
         #self.add(equnit1)
         #self.add(equnit2)
@@ -1712,7 +2102,7 @@ class Summary(Scene):
         backeq = MathTex(r'\frac{\partial l}{\partial y} = 2(y - \hat{y})', color=BLACK).move_to(backrect.get_center()).scale(0.8)
         backbox.add(backrect)
         backbox.add(backeq)
-        backbox.scale(0.5).next_to(lower_chain, RIGHT, buff=1.25, aligned_edge=TOP)
+        backbox.scale(0.5).next_to(lower_chain, RIGHT, buff=1.25, aligned_edge=UP)
 
         lower_hatch = Arc(
             radius = 0.4,
@@ -1753,7 +2143,58 @@ class Summary(Scene):
         self.add(cross_arrows)
         self.wait()
         self.add(update_rule)
+
+        self.next_section("Summary.1", type=PresentationSectionType.NORMAL)                
+        ##
+        ## animation starcraft II
+        ##
+        self.play(FadeIn(input_X, shift=DOWN, run_time=3))
+        self.play(
+            ShowPassingFlash(
+                input_arrows.set_color(RED).set_stroke(width=2),
+                run_time=3,
+                time_width = 0.5,
+                lag_ratio = 0.8
+            )
+        )
         
+        in_vect = np.ones(self.network.sizes[0])
+        activations = self.network.get_activation_of_all_layers(
+            in_vect
+        )
+        for i, activation in enumerate(activations):
+            layer_index = i
+            activation_vector = activation
+            layer = self.network_mob.layers[layer_index]
+            active_layer = self.network_mob.get_active_layer(
+                layer_index, activation_vector
+            )
+            anims = []
+            if layer_index < len(self.network.sizes) - 1:
+                anims += self.network_mob.get_edge_propogation_animations(
+                    layer_index,
+                    run_time = 3,
+                )
+            anims += [Transform(layer, active_layer)]
+            #for i in active_layer:
+            #    anims += [FadeIn(node, scale=2)]
+            self.play(*anims)
+
+        arrow_copy = arrow.copy()
+        arrow_copy.set_stroke(
+            self.network_mob.edge_propogation_color,
+            width = 3*self.network_mob.edge_stroke_width
+        )
+        self.play(
+            ShowPassingFlash(
+                arrow_copy.set_color(RED),
+                run_time = 3*self.network_mob.edge_propogation_time,
+                lag_ratio = 0.8
+            )
+        )
+
+            
+
     def get_equnit_forward(self, k):
         mob = VGroup()
         bigrect = Rectangle(
@@ -1767,7 +2208,7 @@ class Summary(Scene):
             width = 1.6,
             color = BLACK,
             stroke_width = 1,
-        ).move_to(bigrect.get_top(), aligned_edge=TOP)
+        ).move_to(bigrect.get_top(), aligned_edge=UP)
         downrect = Rectangle(
             height = 0.6,
             width = 0.8,
@@ -1881,7 +2322,7 @@ class Summary(Scene):
             width = 1.6,
             color = BLACK,
             stroke_width = 1,
-        ).move_to(bigrect.get_top(), aligned_edge=TOP)
+        ).move_to(bigrect.get_top(), aligned_edge=UP)
         downrect = Rectangle(
             height = 0.6,
             width = 1.6,
@@ -1958,7 +2399,7 @@ class Summary(Scene):
 
         mob.scale(0.5)
         return mob
-
+    
     def back_propagation(self, input_vector, false_confidence = False, added_anims = None):        
         if added_anims is None:
             added_anims = []
@@ -1997,3 +2438,20 @@ class Summary(Scene):
         #     )
             anims += added_anims
             self.play(*anims)               
+
+class A13_Homework(Scene):
+    def construct(self):
+        title = Title(f"Homework (2021 Alibaba 5th)", include_underline=True)
+        self.add(title)
+        hw1 = ImageMobject("5").set_height(6).to_edge(LEFT, buff=1).to_edge(UP, buff=0.5)
+        self.play(FadeIn(hw1))
+
+        self.next_section("HW.1", type=PresentationSectionType.NORMAL)                
+        caps = VGroup(*[
+            Text(f'阿里巴巴数学竞赛', color=BLACK, font_size = 24),            
+            Text(f'https://damo.alibaba.com/alibaba-global-mathematics-competition?lang=zh', color=BLACK, font_size = 16),
+        ]).arrange(DOWN, buff=0.1).to_edge(DOWN, buff=0.5)
+        self.play(FadeIn(caps))
+        
+        
+            
